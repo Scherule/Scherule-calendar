@@ -35,7 +35,7 @@ sourceCompatibility = '1.8'
 mainClassName = 'io.vertx.core.Launcher'
 
 def vertxVersion = '3.4.2'
-def mainVerticleName = 'io.vertx.starter.MainVerticle'
+def mainVerticleName = 'com.scherule.calendaring.CalendaringVerticle'
 def watchForChange = 'src/**/*'
 def doOnChange = './gradlew classes'
 
@@ -43,6 +43,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     compile "io.vertx:vertx-core:$vertxVersion"
     compile "io.vertx:vertx-reactive-streams:$vertxVersion"
+    compile "io.vertx:vertx-service-discovery:$vertxVersion"
     testCompile "junit:junit:4.12"
     testCompile "io.vertx:vertx-unit:$vertxVersion"
 }
