@@ -7,6 +7,9 @@ import io.vertx.rxjava.core.http.HttpServerRequest
 import org.slf4j.LoggerFactory
 import rx.Observable
 import java.util.concurrent.TimeUnit
+import io.vertx.core.http.HttpServerOptions
+
+
 
 
 class CalendaringRootVerticle : MicroServiceVerticle() {
@@ -23,7 +26,7 @@ class CalendaringRootVerticle : MicroServiceVerticle() {
         defineMessageSource()
         defineHttpServer()
 
-        Observable.interval(10, 10, TimeUnit.SECONDS, RxHelper.scheduler(vertx))
+        Observable.interval(10, 10, TimeUnit.SECONDS, RxHelper.blockingScheduler(vertx))
                 .subscribe({
                     messagePublisher.send("Sending $it")
                 })
@@ -46,14 +49,9 @@ class CalendaringRootVerticle : MicroServiceVerticle() {
         val host = config().getString("http.host")
         val port = config().getInteger("http.port")
 
-        httpRequestObservable = rxVertx.createHttpServer()
-                .listen(port, host, {
-                    if(it.failed()) {
-                        throw IllegalStateException("Could not start HTTP server");
-                    }
-                })
-                .requestStream()
-                .toObservable()
+        httpRequestObservable = rxVertx.createHttpServer(
+                HttpServerOptions().setPort(port).setHost(host)
+        ).requestStream().toObservable();
 
         rxPublishHttpEndpoint(
                 name = config().getString("http.name"),
