@@ -46,6 +46,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "io.vertx:vertx-core:$vertxVersion"
+    compile "io.vertx:vertx-web:$vertxVersion"
     compile "io.vertx:vertx-reactive-streams:$vertxVersion"
     compile "io.vertx:vertx-service-discovery:$vertxVersion"
     compile "io.vertx:vertx-hazelcast:$vertxVersion"

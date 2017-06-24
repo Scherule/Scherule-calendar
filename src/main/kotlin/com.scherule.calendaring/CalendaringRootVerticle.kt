@@ -8,6 +8,9 @@ import org.slf4j.LoggerFactory
 import rx.Observable
 import java.util.concurrent.TimeUnit
 import io.vertx.core.http.HttpServerOptions
+import io.vertx.rxjava.core.http.HttpServer
+import io.vertx.rxjava.ext.web.Router
+import io.vertx.core.json.Json
 
 
 
@@ -18,7 +21,7 @@ class CalendaringRootVerticle : MicroServiceVerticle() {
         val log = LoggerFactory.getLogger(CalendaringRootVerticle::class.qualifiedName)
     }
 
-    private lateinit var httpRequestObservable: Observable<HttpServerRequest>
+    private lateinit var httpRequestServer: HttpServer
     private lateinit var messagePublisher: MessageProducer<String>
 
     override fun start() {
@@ -30,7 +33,6 @@ class CalendaringRootVerticle : MicroServiceVerticle() {
                 .subscribe({
                     messagePublisher.send("Sending $it")
                 })
-
 
     }
 
@@ -49,9 +51,17 @@ class CalendaringRootVerticle : MicroServiceVerticle() {
         val host = config().getString("http.host")
         val port = config().getInteger("http.port")
 
-        httpRequestObservable = rxVertx.createHttpServer(
+        val router = Router.router(rxVertx)
+
+        router.get("/hello").handler {
+            it.response()
+                    .putHeader("content-type", "application/json")
+                    .end(Json.encode(arrayOf("abc", "def")))
+        }
+
+        httpRequestServer = rxVertx.createHttpServer(
                 HttpServerOptions().setPort(port).setHost(host)
-        ).requestStream().toObservable();
+        ).requestHandler(router::accept).listen()
 
         rxPublishHttpEndpoint(
                 name = config().getString("http.name"),
