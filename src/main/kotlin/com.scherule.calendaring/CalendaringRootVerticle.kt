@@ -9,6 +9,7 @@ import io.vertx.rxjava.core.http.HttpServer
 import io.vertx.rxjava.ext.web.Router
 import org.slf4j.LoggerFactory
 import rx.Observable
+import java.math.BigDecimal
 import java.util.concurrent.TimeUnit
 
 
@@ -50,10 +51,17 @@ class CalendaringRootVerticle : MicroServiceVerticle() {
 
         val router = Router.router(rxVertx)
 
+        val cal = Calendar()
+        cal.cash = 100.0
+        cal.shares = mapOf(
+                "xyz" to 1,
+                "abc" to 59
+        )
+
         router.get("/hello").handler {
             it.response()
                     .putHeader("content-type", "application/json")
-                    .end(Json.encode(arrayOf("abc", "def")))
+                    .end(Json.encode(cal))
         }
 
         httpRequestServer = rxVertx.createHttpServer(
