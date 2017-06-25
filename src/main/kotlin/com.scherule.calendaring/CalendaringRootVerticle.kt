@@ -1,18 +1,15 @@
 package com.scherule.calendaring;
 
 import com.scherule.commons.MicroServiceVerticle
+import io.vertx.core.http.HttpServerOptions
+import io.vertx.core.json.Json
 import io.vertx.rx.java.RxHelper
 import io.vertx.rxjava.core.eventbus.MessageProducer
-import io.vertx.rxjava.core.http.HttpServerRequest
+import io.vertx.rxjava.core.http.HttpServer
+import io.vertx.rxjava.ext.web.Router
 import org.slf4j.LoggerFactory
 import rx.Observable
 import java.util.concurrent.TimeUnit
-import io.vertx.core.http.HttpServerOptions
-import io.vertx.rxjava.core.http.HttpServer
-import io.vertx.rxjava.ext.web.Router
-import io.vertx.core.json.Json
-
-
 
 
 class CalendaringRootVerticle : MicroServiceVerticle() {

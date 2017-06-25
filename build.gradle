@@ -18,6 +18,7 @@ apply plugin: 'application'
 repositories {
     mavenLocal()
     jcenter()
+    maven { url "http://dl.bintray.com/cy6ergn0m/maven" }
 }
 
 compileKotlin {
@@ -46,12 +47,40 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "io.vertx:vertx-core:$vertxVersion"
+    compile "io.vertx:vertx-codegen:$vertxVersion"
     compile "io.vertx:vertx-web:$vertxVersion"
     compile "io.vertx:vertx-reactive-streams:$vertxVersion"
     compile "io.vertx:vertx-service-discovery:$vertxVersion"
     compile "io.vertx:vertx-hazelcast:$vertxVersion"
+    compile 'org.jetbrains.kotlinx:vertx3-lang-kotlin:0.0.+'
     testCompile "junit:junit:4.12"
     testCompile "io.vertx:vertx-unit:$vertxVersion"
+}
+
+task annotationProcessing(type: JavaCompile, group: 'build') {
+    source = sourceSets.main.java
+    classpath = configurations.compile + configurations.compileOnly
+    destinationDir = project.file('src/main/generated')
+    options.compilerArgs = [
+            "-proc:only",
+            "-processor", "io.vertx.codegen.CodeGenProcessor",
+            "-Acodegen.output=${project.projectDir}/src/main"
+    ]
+}
+
+compileJava {
+    targetCompatibility = 1.8
+    sourceCompatibility = 1.8
+
+    dependsOn annotationProcessing
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs += 'src/main/generated'
+        }
+    }
 }
 
 shadowJar {
