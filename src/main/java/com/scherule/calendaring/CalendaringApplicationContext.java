@@ -1,5 +1,6 @@
 package com.scherule.calendaring;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -10,7 +11,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import static com.google.inject.name.Names.named;
 
 
-class CalendaringApplicationContext extends AbstractModule {
+public class CalendaringApplicationContext extends AbstractModule {
 
     private final Injector injector = Guice.createInjector(this);
 
@@ -20,6 +21,16 @@ class CalendaringApplicationContext extends AbstractModule {
 
     @Override
     protected void configure() {
+        configureChannel();
+        bindObjectMapper();
+    }
+
+    private void bindObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        bind(ObjectMapper.class).toInstance(objectMapper);
+    }
+
+    private void configureChannel() {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
         factory.setPort(5672);
