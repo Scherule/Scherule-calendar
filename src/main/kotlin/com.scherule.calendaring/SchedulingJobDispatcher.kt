@@ -26,6 +26,7 @@ class SchedulingJobDispatcher
         val participant = Participant(
                 id = ParticipantId("1"),
                 name = "Greg",
+                importance = 100,
                 availability = setOf(
                         Interval.parse("2012-01-01T14:15Z/2014-06-20T16:00Z"),
                         Interval.parse("2012-01-01T14:15Z/2014-06-20T16:00Z")
