@@ -1,6 +1,7 @@
 package com.scherule.calendaring;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -27,6 +28,7 @@ public class CalendaringApplicationContext extends AbstractModule {
 
     private void bindObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JodaModule());
         bind(ObjectMapper.class).toInstance(objectMapper);
     }
 
