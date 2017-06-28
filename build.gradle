@@ -25,6 +25,42 @@ version = '1.0-SNAPSHOT'
 sourceCompatibility = '1.8'
 mainClassName = 'com.scherule.calendaring.CalendaringApplication'
 
+def vertxVersion = '3.4.2'
+def mainVerticleName = 'com.scherule.calendaring.CalendaringRootVerticle'
+def watchForChange = 'src/**/*'
+def doOnChange = './gradlew classes'
+
+dependencies {
+    compile "com.scherule:Scherule-commons:$version"
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.1'
+    compile "io.vertx:vertx-core:$vertxVersion"
+    compile "io.vertx:vertx-web:$vertxVersion"
+    compile "io.vertx:vertx-reactive-streams:$vertxVersion"
+    compile "io.vertx:vertx-service-discovery:$vertxVersion"
+    compile "io.vertx:vertx-hazelcast:$vertxVersion"
+    compile 'org.jetbrains.kotlinx:vertx3-lang-kotlin:0.0.+'
+    compile group: 'com.rabbitmq', name: 'amqp-client', version: '4.1.1'
+    compile 'com.google.inject:guice:4.1.0'
+    compileOnly "io.vertx:vertx-codegen:$vertxVersion"
+    testCompile "junit:junit:4.12"
+    testCompile "io.vertx:vertx-unit:$vertxVersion"
+}
+
+task annotationProcessing(type: JavaCompile, group: 'build') {
+    dependsOn tasks.getByPath('compileKotlin')
+    source = [ sourceSets.main.java, sourceSets.main.kotlin ]
+    classpath = configurations.compile + configurations.compileOnly + files(compileKotlin.destinationDir)
+    destinationDir = project.file('src/main/generated')
+    options.compilerArgs = [
+            "-proc:only",
+            "-processor", "io.vertx.codegen.CodeGenProcessor",
+            "-Acodegen.output=${project.projectDir}/src/main"
+    ]
+}
+
 compileKotlin {
     kotlinOptions {
         jvmTarget = sourceCompatibility
@@ -34,38 +70,6 @@ compileTestKotlin {
     kotlinOptions {
         jvmTarget = sourceCompatibility
     }
-}
-
-def vertxVersion = '3.4.2'
-def mainVerticleName = 'com.scherule.calendaring.CalendaringRootVerticle'
-def watchForChange = 'src/**/*'
-def doOnChange = './gradlew classes'
-
-dependencies {
-    compile "com.scherule:Scherule-commons:$version"
-    compile group: 'ch.qos.logback', name: 'logback-core', version: '1.2.3'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    compile "io.vertx:vertx-core:$vertxVersion"
-    compile "io.vertx:vertx-codegen:$vertxVersion"
-    compile "io.vertx:vertx-web:$vertxVersion"
-    compile "io.vertx:vertx-reactive-streams:$vertxVersion"
-    compile "io.vertx:vertx-service-discovery:$vertxVersion"
-    compile "io.vertx:vertx-hazelcast:$vertxVersion"
-    compile 'org.jetbrains.kotlinx:vertx3-lang-kotlin:0.0.+'
-    testCompile "junit:junit:4.12"
-    testCompile "io.vertx:vertx-unit:$vertxVersion"
-}
-
-task annotationProcessing(type: JavaCompile, group: 'build') {
-    source = sourceSets.main.java
-    classpath = configurations.compile + configurations.compileOnly
-    destinationDir = project.file('src/main/generated')
-    options.compilerArgs = [
-            "-proc:only",
-            "-processor", "io.vertx.codegen.CodeGenProcessor",
-            "-Acodegen.output=${project.projectDir}/src/main"
-    ]
 }
 
 compileJava {
