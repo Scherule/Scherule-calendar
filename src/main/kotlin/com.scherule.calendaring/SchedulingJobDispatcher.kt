@@ -2,10 +2,7 @@ package com.scherule.calendaring
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.rabbitmq.client.Channel
-import com.scherule.calendaring.domain.MeetingParameters
-import com.scherule.calendaring.domain.Participant
-import com.scherule.calendaring.domain.ParticipantId
-import com.scherule.calendaring.domain.SchedulingJobId
+import com.scherule.calendaring.domain.*
 import org.joda.time.Duration
 import org.joda.time.Interval
 import org.slf4j.LoggerFactory
@@ -31,8 +28,8 @@ class SchedulingJobDispatcher
                 name = "Greg",
                 importance = 100,
                 availability = setOf(
-                        Interval.parse("2012-01-01T14:15Z/2014-06-20T16:00Z"),
-                        Interval.parse("2012-01-01T14:15Z/2014-06-20T16:00Z")
+                        Availability.availableIn(Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z")),
+                        Availability.availableIn(Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"))
                 )
         )
 
@@ -52,7 +49,7 @@ class SchedulingJobDispatcher
                                         name = "Greg",
                                         importance = 1,
                                         availability = setOf(
-                                                Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z")
+                                                Availability.availableIn(Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"))
                                         )
                                 )
                         )
