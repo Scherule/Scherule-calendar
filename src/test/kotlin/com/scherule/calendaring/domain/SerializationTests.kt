@@ -31,17 +31,26 @@ internal class SerializationTests {
         )
     }
 
+
+    @Test
+    fun canSerializeAvailability() {
+        assertEquals(
+                "{\"interval\":\"1507040100000-1507046400000\",\"preference\":90}",
+                objectMapper.writeValueAsString(Availability.availableIn(Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"), 90))
+        )
+    }
+
     @Test
     fun canSerializeParticipant() {
         assertEquals(
-                "{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[\"1507040100000-1507046400000\",\"1507108500000-1507158000000\"]}",
+                "{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}",
                 objectMapper.writeValueAsString(Participant(
                         id = ParticipantId.participantId("321"),
                         name = "Greg",
                         importance = 100,
                         availability = setOf(
-                                Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"),
-                                Interval.parse("2017-10-04T09:15Z/2017-10-04T23:00Z")
+                                Availability.availableIn(Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z")),
+                                Availability.availableIn(Interval.parse("2017-10-04T09:15Z/2017-10-04T23:00Z"))
                         )
                 ))
         )
@@ -62,7 +71,7 @@ internal class SerializationTests {
     @Test
     fun canSerializeSchedulingJob() {
         assertEquals(
-                "{\"id\":{\"id\":\"933\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":1,\"availability\":[\"1507040100000-1507046400000\"]}]}",
+                "{\"id\":{\"id\":\"933\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":1,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1}]}]}",
                 objectMapper.writeValueAsString(SchedulingJob(
                         id = SchedulingJobId.schedulingJobId("933"),
                         parameters = MeetingParameters(
@@ -76,7 +85,7 @@ internal class SerializationTests {
                                         name = "Greg",
                                         importance = 1,
                                         availability = setOf(
-                                                Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z")
+                                                Availability.availableIn(Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"))
                                         )
                                 )
                         )
