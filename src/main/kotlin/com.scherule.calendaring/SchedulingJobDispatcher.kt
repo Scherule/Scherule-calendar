@@ -38,6 +38,9 @@ class SchedulingJobDispatcher
         channel.basicPublish("", "scheduling-queue", null, objectMapper.writeValueAsBytes(
                 SchedulingJob(
                         id = SchedulingJobId.schedulingJobId("933"),
+                        algorithm = SchedulingAlgorithm(
+                                type = "intervalProjection"
+                        ),
                         parameters = MeetingParameters(
                                 between = Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"),
                                 minDuration = Duration.standardHours(5),

@@ -41,6 +41,16 @@ internal class SerializationTests {
     }
 
     @Test
+    fun canSerializeSchedulingAlgorithm() {
+        assertEquals(
+                "{\"type\":\"intervalProjection\"}",
+                objectMapper.writeValueAsString(SchedulingAlgorithm(
+                        type = "intervalProjection"
+                ))
+        )
+    }
+
+    @Test
     fun canSerializeParticipant() {
         assertEquals(
                 "{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}",
@@ -71,9 +81,12 @@ internal class SerializationTests {
     @Test
     fun canSerializeSchedulingJob() {
         assertEquals(
-                "{\"id\":{\"id\":\"933\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":1,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1}]}]}",
+                "{\"id\":{\"id\":\"933\"},\"algorithm\":{\"type\":\"intervalProjection\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":1,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1}]}]}",
                 objectMapper.writeValueAsString(SchedulingJob(
                         id = SchedulingJobId.schedulingJobId("933"),
+                        algorithm = SchedulingAlgorithm(
+                                type = "intervalProjection"
+                        ),
                         parameters = MeetingParameters(
                                 between = Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"),
                                 minDuration = Duration.standardHours(5),
