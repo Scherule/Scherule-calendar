@@ -14,8 +14,9 @@ plugins {
 
 repositories {
     mavenLocal()
-    jcenter()
+    maven { url "http://dl.bintray.com/kboom/scherule" }
     maven { url "http://dl.bintray.com/cy6ergn0m/maven" }
+    mavenCentral()
 }
 
 apply plugin: 'kotlin'
@@ -31,7 +32,7 @@ def watchForChange = 'src/**/*'
 def doOnChange = './gradlew classes'
 
 dependencies {
-    compile "com.scherule:Scherule-commons:$version"
+    compile "com.scherule:scherule-commons:1.1"
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
