@@ -1,7 +1,5 @@
 package com.scherule.calendaring;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -14,7 +12,7 @@ import static com.google.inject.name.Names.named;
 
 public class CalendaringApplicationContext extends AbstractModule {
 
-    private final Injector injector = Guice.createInjector(this);
+    private final Injector injector = Guice.createInjector(this, new CalendaringDomainContext());
 
     Injector getInjector() {
         return injector;
@@ -23,13 +21,6 @@ public class CalendaringApplicationContext extends AbstractModule {
     @Override
     protected void configure() {
         configureChannel();
-        bindObjectMapper();
-    }
-
-    private void bindObjectMapper() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JodaModule());
-        bind(ObjectMapper.class).toInstance(objectMapper);
     }
 
     private void configureChannel() {

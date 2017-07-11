@@ -2,19 +2,30 @@ package com.scherule.calendaring.domain
 
 import com.google.inject.Guice
 import com.google.inject.Injector
-import com.google.inject.Module
-import com.scherule.calendaring.CalendaringApplicationContext
+import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback
+import org.junit.jupiter.api.extension.ContainerExtensionContext
 import org.junit.jupiter.api.extension.TestExtensionContext
+import kotlin.reflect.full.createInstance
 
-class InjectorExtension(
-        modules: List<Module> = listOf(CalendaringApplicationContext())
-) : BeforeTestExecutionCallback {
+class InjectorExtension : BeforeAllCallback, BeforeTestExecutionCallback {
 
-    val injector: Injector = Guice.createInjector(modules)
+    lateinit var injector: Injector
 
-    override fun beforeTestExecution(context: TestExtensionContext?) {
-        injector.injectMembers(context?.testInstance)
+    override fun beforeAll(context: ContainerExtensionContext) {
+        val testClass = context.testClass.get()
+        val injectorContext: InjectorContext? = testClass.getAnnotation(InjectorContext::class.java)
+        if (injectorContext != null) {
+            injector = Guice.createInjector(injectorContext.modules.map {
+                it.createInstance()
+            })
+        } else {
+            throw IllegalStateException("There must be an InjectorContext annotation put on the test class")
+        }
+    }
+
+    override fun beforeTestExecution(context: TestExtensionContext) {
+        injector.injectMembers(context.testInstance)
     }
 
 }

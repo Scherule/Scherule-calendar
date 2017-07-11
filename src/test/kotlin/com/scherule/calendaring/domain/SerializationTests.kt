@@ -1,15 +1,21 @@
 package com.scherule.calendaring.domain
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.scherule.calendaring.CalendaringDomainContext
 import com.scherule.calendaring.SchedulingJob
 import org.joda.time.Duration
 import org.joda.time.Interval
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.DisplayName
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import javax.inject.Inject
 
+@Nested
+@DisplayName("Serialization tests")
 @ExtendWith(InjectorExtension::class)
+@InjectorContext(CalendaringDomainContext::class)
 internal class SerializationTests {
 
     @Inject
