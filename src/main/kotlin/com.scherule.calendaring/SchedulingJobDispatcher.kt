@@ -39,7 +39,7 @@ class SchedulingJobDispatcher
                 SchedulingJob(
                         id = SchedulingJobId.schedulingJobId("933"),
                         algorithm = SchedulingAlgorithm(
-                                type = "intervalProjection"
+                                type = "interval-projection"
                         ),
                         parameters = MeetingParameters(
                                 between = Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"),
