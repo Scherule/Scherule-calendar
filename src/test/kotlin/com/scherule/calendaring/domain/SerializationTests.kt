@@ -1,7 +1,6 @@
 package com.scherule.calendaring.domain
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.scherule.calendaring.CalendaringDomainContext
 import com.scherule.calendaring.SchedulingJob
 import org.joda.time.Duration
 import org.joda.time.Interval
