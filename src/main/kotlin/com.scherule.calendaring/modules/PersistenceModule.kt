@@ -12,6 +12,8 @@ class PersistenceModule : AbstractModule() {
     override fun configure() {
         val httpClient = StdHttpClient.Builder()
                 .url("http://localhost:5984")
+                .username("test")
+                .password("test")
                 .build()
         val dbInstance = StdCouchDbInstance(httpClient)
         val db = StdCouchDbConnector("calendaring-db", dbInstance)

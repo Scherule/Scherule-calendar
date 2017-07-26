@@ -2,7 +2,9 @@ package com.scherule.calendaring;
 
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.google.inject.TypeLiteral;
 import com.rabbitmq.client.Channel;
+import com.scherule.calendaring.endpoints.Endpoint;
 import com.scherule.commons.MicroServiceVerticle;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.Json;
@@ -12,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Set;
 
 import static com.google.inject.name.Names.named;
 
@@ -23,6 +27,7 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
     private final Channel schedulingChannel;
     private final SchedulingJobDispatcher schedulingJobDispatcher;
     private final SchedulingResultsConsumer schedulingResultsConsumer;
+    private final Set<Endpoint> endpoints;
 
     private HttpServer httpRequestServer;
 
@@ -32,10 +37,12 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
         schedulingChannel = injector.getInstance(Key.get(Channel.class, named("scheduling.channel")));
         schedulingJobDispatcher = injector.getInstance(SchedulingJobDispatcher.class);
         schedulingResultsConsumer = injector.getInstance(SchedulingResultsConsumer.class);
+        endpoints = injector.getInstance(Key.get(new TypeLiteral<Set<Endpoint>>() {}));
     }
 
     @Override
     public void start() {
+        super.start();
         try {
             schedulingChannel.queueDeclare("scheduling-queue", true, false, false, null);
             schedulingChannel.queueDeclare("scheduling-queue-results", true, false, false, null);
@@ -44,6 +51,8 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
         } catch (IOException e) {
             throw new IllegalStateException("Could not bind scheduling job consumer to scheduling channel", e);
         }
+
+        defineHttpServer();
     }
 
     private void defineHttpServer() {
@@ -52,11 +61,7 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
 
         Router router = Router.router(rxVertx);
 
-        router.get("/hello").handler((request) -> {
-            request.response()
-                    .putHeader("content-type", "application/json")
-                    .end(Json.encode(""));
-        });
+        endpoints.forEach((endpoint) -> endpoint.mount(router));
 
         httpRequestServer = rxVertx.createHttpServer(
                 new HttpServerOptions().setPort(port).setHost(host)
