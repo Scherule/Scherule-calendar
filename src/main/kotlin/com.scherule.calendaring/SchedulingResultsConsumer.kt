@@ -4,6 +4,7 @@ import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.DefaultConsumer
 import com.rabbitmq.client.Envelope
+import com.scherule.calendaring.domain.repositories.MeetingRepository
 import org.slf4j.LoggerFactory
 import java.nio.charset.Charset
 import javax.inject.Inject
@@ -13,7 +14,8 @@ import javax.inject.Singleton
 @Singleton
 class SchedulingResultsConsumer
 @Inject constructor(
-        @Named("scheduling.channel") channel: Channel
+        @Named("scheduling.channel") channel: Channel,
+        private val meetingRepository: MeetingRepository
 ) : DefaultConsumer(channel) {
 
     companion object {
