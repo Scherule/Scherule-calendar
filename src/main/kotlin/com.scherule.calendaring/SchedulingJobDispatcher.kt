@@ -1,6 +1,7 @@
 package com.scherule.calendaring
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.rabbitmq.client.AMQP
 import com.rabbitmq.client.Channel
 import com.scherule.calendaring.domain.*
 import org.joda.time.Duration
@@ -23,19 +24,12 @@ class SchedulingJobDispatcher
     }
 
     fun dispatchJob() {
-        val participant = Participant(
-                id = ParticipantId("1"),
-                name = "Greg",
-                importance = 100,
-                availability = setOf(
-                        Availability.availableIn(Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z")),
-                        Availability.availableIn(Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"))
-                )
-        )
+        val props = AMQP.BasicProperties.Builder()
+                .replyTo("scheduling-queue-results")
+                .correlationId("1")
+                .build()
 
-
-
-        channel.basicPublish("", "scheduling-queue", null, objectMapper.writeValueAsBytes(
+        channel.basicPublish("", "scheduling-queue", props, objectMapper.writeValueAsBytes(
                 SchedulingJob(
                         id = SchedulingJobId.schedulingJobId("933"),
                         algorithm = SchedulingAlgorithm(

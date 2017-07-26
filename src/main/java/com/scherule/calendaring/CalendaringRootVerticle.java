@@ -22,6 +22,8 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
 
     private final Channel schedulingChannel;
     private final SchedulingJobDispatcher schedulingJobDispatcher;
+    private final SchedulingResultsConsumer schedulingResultsConsumer;
+
     private HttpServer httpRequestServer;
 
     @SuppressWarnings("unused")
@@ -29,12 +31,15 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
         Injector injector = CalendaringApplication.context.getInjector();
         schedulingChannel = injector.getInstance(Key.get(Channel.class, named("scheduling.channel")));
         schedulingJobDispatcher = injector.getInstance(SchedulingJobDispatcher.class);
+        schedulingResultsConsumer = injector.getInstance(SchedulingResultsConsumer.class);
     }
 
     @Override
     public void start() {
         try {
             schedulingChannel.queueDeclare("scheduling-queue", true, false, false, null);
+            schedulingChannel.queueDeclare("scheduling-queue-results", true, false, false, null);
+            schedulingChannel.basicConsume("scheduling-queue-results", false, schedulingResultsConsumer);
             schedulingJobDispatcher.dispatchJob();
         } catch (IOException e) {
             throw new IllegalStateException("Could not bind scheduling job consumer to scheduling channel", e);
