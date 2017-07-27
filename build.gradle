@@ -31,7 +31,6 @@ repositories {
 
 apply plugin: 'kotlin'
 apply plugin: 'application'
-apply plugin: 'com.bmuschko.docker-java-application'
 apply plugin: 'com.bmuschko.docker-remote-api'
 apply plugin: 'org.junit.platform.gradle.plugin'
 
@@ -47,35 +46,9 @@ def mainVerticleName = 'com.scherule.calendaring.CalendaringRootVerticle'
 def watchForChange = 'src/**/*'
 def doOnChange = './gradlew classes'
 
-dependencies {
-    compile "com.scherule:scherule-commons:1.1"
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.1'
-    compile "io.vertx:vertx-core:$vertxVersion"
-    compile "io.vertx:vertx-web:$vertxVersion"
-    compile "io.vertx:vertx-reactive-streams:$vertxVersion"
-    compile "io.vertx:vertx-service-discovery:$vertxVersion"
-    compile "io.vertx:vertx-hazelcast:$vertxVersion"
-    compile 'org.jetbrains.kotlinx:vertx3-lang-kotlin:0.0.+'
-    compile group: 'com.rabbitmq', name: 'amqp-client', version: '4.1.1'
-    compile 'com.google.inject:guice:4.1.0'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.9'
-    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.8.9'
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.7"
-    compile group: 'com.google.inject.extensions', name: 'guice-multibindings', version: '4.1.0'
-    compile group: 'org.ektorp', name: 'org.ektorp', version: '1.4.4'
-    compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
-    compileOnly "io.vertx:vertx-codegen:$vertxVersion"
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M5'
-    testRuntime 'org.junit.platform:junit-platform-launcher:1.0.0-M5'
-    testRuntime 'org.junit.platform:junit-platform-runner:1.0.0-M5'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.0-M5'
-    testCompile "io.vertx:vertx-unit:$vertxVersion"
-    testCompile 'io.rest-assured:rest-assured:3.0.3'
-    testCompile 'io.rest-assured:json-path:3.0.3'
-    testCompile 'io.rest-assured:json-schema-validator:3.0.3'
+configurations {
+    integrationCompile.extendsFrom testCompile
+    integrationRuntime.extendsFrom testRuntime
 }
 
 task annotationProcessing(type: JavaCompile, group: 'build') {
@@ -88,37 +61,6 @@ task annotationProcessing(type: JavaCompile, group: 'build') {
             "-processor", "io.vertx.codegen.CodeGenProcessor",
             "-Acodegen.output=${project.projectDir}/src/main"
     ]
-}
-
-task startInBackground() {
-    doLast {
-        println "Running ${fatJarName} in background"
-        ant.exec(
-                executable: "${System.properties.'java.home'}/bin/java",
-                dir: "${project.buildDir}/libs",
-                spawn: false
-        ) {
-            arg(value: '-jar')
-            arg(value: fatJarName)
-//            arg(value: '-conf')
-//            arg(value: "${rootProject.rootDir}/test-classes/config.json")
-        }
-    }
-}
-
-task stopInBackground() {
-    doLast {
-        ant.exec(
-                executable: 'bash',
-                dir: project.projectDir,
-                spawn: false
-        ) {
-            arg(value: '-c')
-            arg(value: $/ps ax | grep -Ei '[\-]DtestPort=${http.port}\s+\-jar\s+${
-                project.artifactId
-            }' | awk 'NR==1{print $1}' | xargs kill -SIGTERM/$)
-        }
-    }
 }
 
 compileKotlin {
@@ -140,13 +82,23 @@ compileJava {
     dependsOn annotationProcessing
 }
 
-
 sourceSets {
+
     main {
         java {
             srcDirs += 'src/main/generated'
         }
     }
+
+    integration {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration/java')
+        }
+        resources.srcDir file('src/integration/resources')
+    }
+
 }
 
 shadowJar {
@@ -164,15 +116,11 @@ junitPlatform {
     enableStandardTestTask true
 
     filters {
-        tags {
-            exclude 'integration-test'
-        }
         packages {
             include 'com.scherule.calendaring'
         }
     }
 }
-
 
 run {
     args = ['run', mainVerticleName, "--redeploy=$watchForChange", "--launcher-class=$mainClassName", "--on-redeploy=$doOnChange"]
@@ -212,31 +160,46 @@ task functionalTestMyApp(type: Test) {
     finalizedBy stopMyAppContainer
 }
 
-task integrationTests(dependsOn: "startMyAppContainer") {
-    doLast {
-        def request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(selectPackage("com.scherule.calendaring"))
-                .filters(includeClassNamePatterns(".*IntegrationTest"))
-                .build()
+task integrationTest(
+        type: Test,
+        dependsOn: "startMyAppContainer",
+        description: 'Runs the integration tests.',
+        group: 'Verification'
+) {
 
-        def launcher = LauncherFactory.create()
-
-        def listener = new SummaryGeneratingListener()
-        launcher.registerTestExecutionListeners(listener)
-        launcher.execute(request)
-    }
+    classpath = sourceSets.integration.runtimeClasspath
+    outputs.upToDateWhen { false }
 
     finalizedBy(stopMyAppContainer)
 }
 
-docker {
-    javaApplication {
-        baseImage = 'openjdk:8-jre'
-        ports = [8080]
-        tag = 'latest'
-        exec {
-            defaultCommand 'server'
-            entryPoint 'myApp/bin/containerLaunch.sh'
-        }
-    }
+dependencies {
+    compile "com.scherule:scherule-commons:1.1"
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.1'
+    compile "io.vertx:vertx-core:$vertxVersion"
+    compile "io.vertx:vertx-web:$vertxVersion"
+    compile "io.vertx:vertx-reactive-streams:$vertxVersion"
+    compile "io.vertx:vertx-service-discovery:$vertxVersion"
+    compile "io.vertx:vertx-hazelcast:$vertxVersion"
+    compile 'org.jetbrains.kotlinx:vertx3-lang-kotlin:0.0.+'
+    compile group: 'com.rabbitmq', name: 'amqp-client', version: '4.1.1'
+    compile 'com.google.inject:guice:4.1.0'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.9'
+    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.8.9'
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.7"
+    compile group: 'com.google.inject.extensions', name: 'guice-multibindings', version: '4.1.0'
+    compile group: 'org.ektorp', name: 'org.ektorp', version: '1.4.4'
+    compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
+    compileOnly "io.vertx:vertx-codegen:$vertxVersion"
+    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M5'
+    testRuntime 'org.junit.platform:junit-platform-launcher:1.0.0-M5'
+    testRuntime 'org.junit.platform:junit-platform-runner:1.0.0-M5'
+    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.0-M5'
+    testCompile "io.vertx:vertx-unit:$vertxVersion"
+    integrationCompile 'io.rest-assured:rest-assured:3.0.3'
+    integrationCompile 'io.rest-assured:json-path:3.0.3'
+    integrationCompile 'io.rest-assured:json-schema-validator:3.0.3'
 }
