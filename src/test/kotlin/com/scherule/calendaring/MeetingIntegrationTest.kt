@@ -4,9 +4,10 @@ import io.restassured.RestAssured
 import io.restassured.RestAssured.post
 import org.hamcrest.Matchers.notNullValue
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
-
+@Tag("integration-test")
 internal class MeetingIntegrationTest {
 
     companion object {

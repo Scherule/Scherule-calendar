@@ -24,7 +24,7 @@ class InjectorExtension : BeforeAllCallback, BeforeTestExecutionCallback {
     }
 
     override fun beforeTestExecution(context: ExtensionContext) {
-        injector.injectMembers(context.testInstance)
+        injector.injectMembers(context.testInstance.get())
     }
 
 }

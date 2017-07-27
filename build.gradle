@@ -1,7 +1,8 @@
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder
 import org.junit.platform.launcher.core.LauncherFactory
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener
-
+import com.bmuschko.gradle.docker.tasks.container.*
+import com.bmuschko.gradle.docker.tasks.image.*
 import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNamePatterns
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage
 
@@ -11,6 +12,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
+        classpath group: 'com.bmuschko', name: 'gradle-docker-plugin', version: '3.0.8'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M5'
     }
@@ -29,11 +31,16 @@ repositories {
 
 apply plugin: 'kotlin'
 apply plugin: 'application'
+apply plugin: 'com.bmuschko.docker-java-application'
+apply plugin: 'com.bmuschko.docker-remote-api'
 apply plugin: 'org.junit.platform.gradle.plugin'
 
 version = '1.0-SNAPSHOT'
 sourceCompatibility = '1.8'
 mainClassName = 'com.scherule.calendaring.CalendaringApplication'
+ext {
+    fatJarName = 'scherule-calendaring-fat.jar'
+}
 
 def vertxVersion = '3.4.2'
 def mainVerticleName = 'com.scherule.calendaring.CalendaringRootVerticle'
@@ -83,18 +90,34 @@ task annotationProcessing(type: JavaCompile, group: 'build') {
     ]
 }
 
-task integrationTests(dependsOn: "test") {
+task startInBackground() {
     doLast {
-        def request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(selectPackage("com.scherule.calendaring"))
-                .filters(includeClassNamePatterns(".*IntegrationTest"))
-                .build()
+        println "Running ${fatJarName} in background"
+        ant.exec(
+                executable: "${System.properties.'java.home'}/bin/java",
+                dir: "${project.buildDir}/libs",
+                spawn: false
+        ) {
+            arg(value: '-jar')
+            arg(value: fatJarName)
+//            arg(value: '-conf')
+//            arg(value: "${rootProject.rootDir}/test-classes/config.json")
+        }
+    }
+}
 
-        def launcher = LauncherFactory.create()
-
-        def listener = new SummaryGeneratingListener()
-        launcher.registerTestExecutionListeners(listener)
-        launcher.execute(request)
+task stopInBackground() {
+    doLast {
+        ant.exec(
+                executable: 'bash',
+                dir: project.projectDir,
+                spawn: false
+        ) {
+            arg(value: '-c')
+            arg(value: $/ps ax | grep -Ei '[\-]DtestPort=${http.port}\s+\-jar\s+${
+                project.artifactId
+            }' | awk 'NR==1{print $1}' | xargs kill -SIGTERM/$)
+        }
     }
 }
 
@@ -103,6 +126,7 @@ compileKotlin {
         jvmTarget = sourceCompatibility
     }
 }
+
 compileTestKotlin {
     kotlinOptions {
         jvmTarget = sourceCompatibility
@@ -126,7 +150,7 @@ sourceSets {
 }
 
 shadowJar {
-    archiveName = 'scherule-calendaring-fat.jar'
+    archiveName = fatJarName
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest {
         attributes 'Main-Class': mainClassName
@@ -138,6 +162,15 @@ junitPlatform {
     platformVersion '1.0.0-M5'
     logManager 'java.util.logging.LogManager'
     enableStandardTestTask true
+
+    filters {
+        tags {
+            exclude 'integration-test'
+        }
+        packages {
+            include 'com.scherule.calendaring'
+        }
+    }
 }
 
 
@@ -147,4 +180,63 @@ run {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.0'
+}
+
+task buildMyAppImage(type: DockerBuildImage, dependsOn: 'build') {
+    inputDir = project.rootDir
+    tag = 'scherule-calendaring'
+    buildArgs = [
+            ARTIFACT_NAME: fatJarName,
+            MAIN_CLASS_NAME: mainClassName,
+            MAIN_VERTICLE_NAME: mainVerticleName
+    ]
+}
+
+task createMyAppContainer(type: DockerCreateContainer) {
+    dependsOn buildMyAppImage
+    targetImageId { buildMyAppImage.getImageId() }
+    portBindings = ['8080:8080']
+}
+
+task startMyAppContainer(type: DockerStartContainer) {
+    dependsOn createMyAppContainer
+    targetContainerId { createMyAppContainer.getContainerId() }
+}
+
+task stopMyAppContainer(type: DockerStopContainer) {
+    targetContainerId { createMyAppContainer.getContainerId() }
+}
+
+task functionalTestMyApp(type: Test) {
+    dependsOn startMyAppContainer
+    finalizedBy stopMyAppContainer
+}
+
+task integrationTests(dependsOn: "startMyAppContainer") {
+    doLast {
+        def request = LauncherDiscoveryRequestBuilder.request()
+                .selectors(selectPackage("com.scherule.calendaring"))
+                .filters(includeClassNamePatterns(".*IntegrationTest"))
+                .build()
+
+        def launcher = LauncherFactory.create()
+
+        def listener = new SummaryGeneratingListener()
+        launcher.registerTestExecutionListeners(listener)
+        launcher.execute(request)
+    }
+
+    finalizedBy(stopMyAppContainer)
+}
+
+docker {
+    javaApplication {
+        baseImage = 'openjdk:8-jre'
+        ports = [8080]
+        tag = 'latest'
+        exec {
+            defaultCommand 'server'
+            entryPoint 'myApp/bin/containerLaunch.sh'
+        }
+    }
 }
