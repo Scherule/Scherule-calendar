@@ -9,9 +9,11 @@ ENV MAIN_CLASS_NAME=${MAIN_CLASS_NAME}
 ENV MAIN_VERTICLE_NAME=${MAIN_VERTICLE_NAME}
 
 RUN mkdir /app
-ADD build/libs/${ARTIFACT_NAME} /app
+
+COPY build/libs/${ARTIFACT_NAME} /app
+COPY entrypoint.sh /app
 
 WORKDIR /app
-
-ENTRYPOINT ["/bin/bash", "-c", "java -jar ${ARTIFACT_NAME}"]
-CMD ["run", "$MAIN_VERTICLE_NAME", "--launcher-class=", "$MAIN_CLASS_NAME"]
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["run", "$MAIN_VERTICLE_NAME", "--launcher-class=$MAIN_CLASS_NAME"]
