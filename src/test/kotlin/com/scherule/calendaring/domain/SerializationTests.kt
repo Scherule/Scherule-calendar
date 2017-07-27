@@ -42,6 +42,14 @@ internal class SerializationTests {
     }
 
     @Test
+    fun canSerializeMeetingId() {
+        assertEquals(
+                "{\"id\":\"123\"}",
+                objectMapper.writeValueAsString(MeetingId.meetingId("123"))
+        )
+    }
+
+    @Test
     fun canSerializeSchedulingJobId() {
         assertEquals(
                 "{\"id\":\"123\"}",
@@ -99,8 +107,9 @@ internal class SerializationTests {
     @Test
     fun canSerializeMeeting() {
         assertEquals(
-                "{\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}]}",
+                "{\"id\":{\"id\":\"123\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}]}",
                 objectMapper.writeValueAsString(Meeting(
+                        id = MeetingId.meetingId("123"),
                         parameters = MeetingParameters(
                                 between = Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"),
                                 minDuration = Duration.standardHours(5),
@@ -125,6 +134,7 @@ internal class SerializationTests {
     fun canDeserializeMeeting() {
         assertEquals(
                 Meeting(
+                        id = MeetingId.meetingId("123"),
                         parameters = MeetingParameters(
                                 between = Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"),
                                 minDuration = Duration.standardHours(5),
@@ -142,7 +152,7 @@ internal class SerializationTests {
                                 )
                         )
                 ),
-                objectMapper.readValue("{\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}]}", Meeting::class.java)
+                objectMapper.readValue("{\"id\":{\"id\":\"123\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}]}", Meeting::class.java)
         )
     }
 
