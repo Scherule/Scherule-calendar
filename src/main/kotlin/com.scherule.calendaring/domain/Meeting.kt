@@ -3,28 +3,26 @@ package com.scherule.calendaring.domain
 import com.scherule.calendaring.domain.MeetingId.Companion.newMeetingId
 
 class Meeting(
-        val id: MeetingId = newMeetingId(),
+        val meetingId: MeetingId = newMeetingId(),
         val parameters: MeetingParameters,
         val participants: Set<Participant>
-) {
+) : AbstractEntity() {
 
     override fun equals(other: Any?): Boolean {
-        if (this === other) return true
+        if(!super.equals(other)) return false
         if (other?.javaClass != javaClass) return false
+        if (!super.equals(other)) return false
 
         other as Meeting
 
-        if (id != other.id) return false
-        if (parameters != other.parameters) return false
-        if (participants != other.participants) return false
+        if (meetingId != other.meetingId) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + parameters.hashCode()
-        result = 31 * result + participants.hashCode()
+        var result = super.hashCode()
+        result = 31 * result + meetingId.hashCode()
         return result
     }
 
