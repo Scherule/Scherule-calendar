@@ -1,10 +1,7 @@
-import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder
-import org.junit.platform.launcher.core.LauncherFactory
-import org.junit.platform.launcher.listeners.SummaryGeneratingListener
-import com.bmuschko.gradle.docker.tasks.container.*
-import com.bmuschko.gradle.docker.tasks.image.*
-import static org.junit.platform.engine.discovery.ClassNameFilter.includeClassNamePatterns
-import static org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage
+import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerStartContainer
+import com.bmuschko.gradle.docker.tasks.container.DockerStopContainer
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
 
 buildscript {
     ext.kotlin_version = '1.1.3'
@@ -130,7 +127,7 @@ task wrapper(type: Wrapper) {
     gradleVersion = '4.0'
 }
 
-task buildMyAppImage(type: DockerBuildImage, dependsOn: 'build') {
+task buildMyAppImage(type: DockerBuildImage) {
     inputDir = project.rootDir
     tag = 'scherule-calendaring'
     buildArgs = [
@@ -161,16 +158,25 @@ task functionalTestMyApp(type: Test) {
 }
 
 task integrationTest(
-        type: Test,
-        dependsOn: "startMyAppContainer",
+        type: JavaExec,
+        dependsOn: ["testClasses", "startMyAppContainer"],
         description: 'Runs the integration tests.',
         group: 'Verification'
 ) {
+    shouldRunAfter test
 
     classpath = sourceSets.integration.runtimeClasspath
-    outputs.upToDateWhen { false }
+
+    main = 'org.junit.platform.console.ConsoleLauncher'
+    args = ['--scan-class-path',
+            sourceSets.integration.output.getClassesDirs().asPath,
+            '--reports-dir', "${buildDir}/test-results/junit-integration"]
 
     finalizedBy(stopMyAppContainer)
+}
+
+check {
+    dependsOn integrationTest
 }
 
 dependencies {
@@ -199,6 +205,8 @@ dependencies {
     testRuntime 'org.junit.platform:junit-platform-runner:1.0.0-M5'
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.0-M5'
     testCompile "io.vertx:vertx-unit:$vertxVersion"
+
+    integrationCompile 'org.junit.platform:junit-platform-console:1.0.0-M5'
     integrationCompile 'io.rest-assured:rest-assured:3.0.3'
     integrationCompile 'io.rest-assured:json-path:3.0.3'
     integrationCompile 'io.rest-assured:json-schema-validator:3.0.3'
