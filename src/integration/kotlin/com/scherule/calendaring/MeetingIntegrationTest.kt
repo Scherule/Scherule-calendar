@@ -8,33 +8,15 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 @Tag("integration-test")
-internal class MeetingIntegrationTest {
+class MeetingIntegrationTest {
 
     companion object {
 
         @BeforeAll
         @JvmStatic
         fun setup() {
-            val port = System.getProperty("server.port")
-            if (port == null) {
-                RestAssured.port = Integer.valueOf(8080)!!
-            } else {
-                RestAssured.port = Integer.valueOf(port)!!
-            }
-
-
-            var basePath: String? = System.getProperty("server.base")
-            if (basePath == null) {
-                basePath = "/rest-garage-sample/"
-            }
-            RestAssured.basePath = basePath
-
-            var baseHost: String? = System.getProperty("server.host")
-            if (baseHost == null) {
-                baseHost = "http://localhost"
-            }
-            RestAssured.baseURI = baseHost
-
+            RestAssured.baseURI = System.getProperty("http.host", "http://localhost")
+            RestAssured.port = Integer.valueOf(System.getProperty("http.port", "8080"))
         }
 
     }

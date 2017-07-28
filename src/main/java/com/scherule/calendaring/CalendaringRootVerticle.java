@@ -7,7 +7,8 @@ import com.rabbitmq.client.Channel;
 import com.scherule.calendaring.endpoints.Endpoint;
 import com.scherule.commons.MicroServiceVerticle;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.json.Json;
+import io.vertx.config.*;
+import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.http.HttpServer;
 import io.vertx.rxjava.ext.web.Router;
 import org.slf4j.Logger;
@@ -56,25 +57,36 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
     }
 
     private void defineHttpServer() {
-        String host = config().getString("http.host");
-        int port = config().getInteger("http.port");
+        ConfigRetriever retriever = ConfigRetriever.create(vertx);
 
-        Router router = Router.router(rxVertx);
+        retriever.getConfig(ar -> {
+            if (ar.failed()) {
+                throw new IllegalStateException("Could not retrieve config configuration");
+            } else {
+                JsonObject config = ar.result();
 
-        endpoints.forEach((endpoint) -> endpoint.mount(router));
+                String host = config.getString("http.host");
+                int port = config.getInteger("http.port");
 
-        httpRequestServer = rxVertx.createHttpServer(
-                new HttpServerOptions().setPort(port).setHost(host)
-        ).requestHandler(router::accept).listen();
+                Router router = Router.router(rxVertx);
 
-        rxPublishHttpEndpoint(
-                config().getString("http.name"),
-                host,
-                port
-        ).doOnSuccess((t) -> {
-            log.info("[Scheduling] http endpoint successfully published");
-        }).doOnError((t) -> {
-            log.error("[Scheduling] http endpoint could not be published");
+                endpoints.forEach((endpoint) -> endpoint.mount(router));
+
+                httpRequestServer = rxVertx.createHttpServer(
+                        new HttpServerOptions().setPort(port).setHost(host)
+                ).requestHandler(router::accept).listen();
+
+                rxPublishHttpEndpoint(
+                        config.getString("http.name"),
+                        host,
+                        port
+                ).doOnSuccess((t) -> {
+                    log.info("[Scheduling] http endpoint successfully published");
+                }).doOnError((t) -> {
+                    log.error("[Scheduling] http endpoint could not be published");
+                });
+
+            }
         });
 
     }

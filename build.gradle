@@ -137,10 +137,15 @@ task buildMyAppImage(type: DockerBuildImage) {
     ]
 }
 
+task allocatePort() {
+    def s = new ServerSocket(0);
+    allocatePort.ext.port = s.getLocalPort()
+}
+
 task createMyAppContainer(type: DockerCreateContainer) {
-    dependsOn buildMyAppImage
+    dependsOn buildMyAppImage, allocatePort
     targetImageId { buildMyAppImage.getImageId() }
-    portBindings = ['8080:8080']
+    portBindings = ["8080:${allocatePort.ext.port}"]
 }
 
 task startMyAppContainer(type: DockerStartContainer) {
@@ -152,27 +157,22 @@ task stopMyAppContainer(type: DockerStopContainer) {
     targetContainerId { createMyAppContainer.getContainerId() }
 }
 
-task functionalTestMyApp(type: Test) {
-    dependsOn startMyAppContainer
-    finalizedBy stopMyAppContainer
-}
-
 task integrationTest(
         type: JavaExec,
-        dependsOn: ["testClasses", "startMyAppContainer"],
         description: 'Runs the integration tests.',
         group: 'Verification'
 ) {
+    dependsOn testClasses, startMyAppContainer, allocatePort
     shouldRunAfter test
+    finalizedBy stopMyAppContainer
 
     classpath = sourceSets.integration.runtimeClasspath
 
     main = 'org.junit.platform.console.ConsoleLauncher'
+    jvmArgs = ["-Dhttp.port=${allocatePort.ext.port}"]
     args = ['--scan-class-path',
             sourceSets.integration.output.getClassesDirs().asPath,
             '--reports-dir', "${buildDir}/test-results/junit-integration"]
-
-    finalizedBy(stopMyAppContainer)
 }
 
 check {
@@ -190,6 +190,7 @@ dependencies {
     compile "io.vertx:vertx-reactive-streams:$vertxVersion"
     compile "io.vertx:vertx-service-discovery:$vertxVersion"
     compile "io.vertx:vertx-hazelcast:$vertxVersion"
+    compile "io.vertx:vertx-config:$vertxVersion"
     compile 'org.jetbrains.kotlinx:vertx3-lang-kotlin:0.0.+'
     compile group: 'com.rabbitmq', name: 'amqp-client', version: '4.1.1'
     compile 'com.google.inject:guice:4.1.0'

@@ -1,5 +1,5 @@
 {
   "http.host": "localhost",
   "http.name": "calendaring",
-  "http.port": 8001
+  "http.port": 8080
 }
