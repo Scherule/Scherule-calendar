@@ -27,3 +27,4 @@ build
 .gradle
 *.iml
 .vertx
+.tmp/**
