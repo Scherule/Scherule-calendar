@@ -1,13 +1,21 @@
 package com.scherule.calendaring;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.phiz71.rxjava.vertx.swagger.router.SwaggerRouter;
+import com.github.phiz71.vertx.swagger.router.OperationIdServiceIdResolver;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.rabbitmq.client.Channel;
 import com.scherule.calendaring.endpoints.Endpoint;
 import com.scherule.commons.MicroServiceVerticle;
+import io.swagger.models.Swagger;
+import io.swagger.parser.SwaggerParser;
+import io.vertx.config.ConfigRetriever;
+import io.vertx.core.Future;
+import io.vertx.core.file.FileSystem;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.config.*;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.http.HttpServer;
 import io.vertx.rxjava.ext.web.Router;
@@ -15,7 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Collection;
+import java.nio.charset.Charset;
 import java.util.Set;
 
 import static com.google.inject.name.Names.named;
@@ -38,12 +46,13 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
         schedulingChannel = injector.getInstance(Key.get(Channel.class, named("scheduling.channel")));
         schedulingJobDispatcher = injector.getInstance(SchedulingJobDispatcher.class);
         schedulingResultsConsumer = injector.getInstance(SchedulingResultsConsumer.class);
-        endpoints = injector.getInstance(Key.get(new TypeLiteral<Set<Endpoint>>() {}));
+        endpoints = injector.getInstance(Key.get(new TypeLiteral<Set<Endpoint>>() {
+        }));
     }
 
     @Override
-    public void start() {
-        super.start();
+    public void start(Future<Void> startFuture) {
+        super.start(startFuture);
         try {
             schedulingChannel.queueDeclare("scheduling-queue", true, false, false, null);
             schedulingChannel.queueDeclare("scheduling-queue-results", true, false, false, null);
@@ -53,39 +62,69 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
             throw new IllegalStateException("Could not bind scheduling job consumer to scheduling channel", e);
         }
 
-        defineHttpServer();
+        defineHttpServer(startFuture);
     }
 
-    private void defineHttpServer() {
+    private void deployVerticles(Future<Void> startFuture) {
+        vertx.deployVerticle("io.swagger.server.api.verticle.MeetingApiVerticle", res -> {
+            if (res.succeeded()) {
+                log.info("MeetingApiVerticle : Deployed");
+            } else {
+                startFuture.fail(res.cause());
+                log.error("MeetingApiVerticle : Deployement failed");
+            }
+        });
+    }
+
+    private void defineHttpServer(Future<Void> startFuture) {
         ConfigRetriever retriever = ConfigRetriever.create(vertx);
 
-        retriever.getConfig(ar -> {
-            if (ar.failed()) {
-                throw new IllegalStateException("Could not retrieve config configuration");
-            } else {
-                JsonObject config = ar.result();
+        Json.mapper.registerModule(new JavaTimeModule());
+        FileSystem vertxFileSystem = vertx.fileSystem();
 
-                String host = config.getString("http.host");
-                int port = config.getInteger("http.port");
+        vertxFileSystem.readFile("swagger.json", readFile -> {
+            if (readFile.succeeded()) {
+                Swagger swagger = new SwaggerParser().parse(readFile.result().toString(Charset.forName("utf-8")));
+                Router swaggerRouter = SwaggerRouter.swaggerRouter(
+                        Router.router(rxVertx), swagger,
+                        rxVertx.eventBus(),
+                        new OperationIdServiceIdResolver()
+                );
 
-                Router router = Router.router(rxVertx);
+                deployVerticles(startFuture);
 
-                endpoints.forEach((endpoint) -> endpoint.mount(router));
+                retriever.getConfig(ar -> {
+                    if (ar.failed()) {
+                        throw new IllegalStateException("Could not retrieve config configuration");
+                    } else {
+                        JsonObject config = ar.result();
 
-                httpRequestServer = rxVertx.createHttpServer(
-                        new HttpServerOptions().setPort(port).setHost(host)
-                ).requestHandler(router::accept).listen();
+                        String host = config.getString("http.host");
+                        int port = config.getInteger("http.port");
 
-                rxPublishHttpEndpoint(
-                        config.getString("http.name"),
-                        host,
-                        port
-                ).doOnSuccess((t) -> {
-                    log.info("[Scheduling] http endpoint successfully published");
-                }).doOnError((t) -> {
-                    log.error("[Scheduling] http endpoint could not be published");
+                        Router router = Router.router(rxVertx);
+
+                        endpoints.forEach((endpoint) -> endpoint.mount(router));
+
+                        httpRequestServer = rxVertx.createHttpServer(
+                                new HttpServerOptions().setPort(port).setHost(host)
+                        ).requestHandler(swaggerRouter::accept).listen();
+
+                        rxPublishHttpEndpoint(
+                                config.getString("http.name"),
+                                host,
+                                port
+                        ).doOnSuccess((t) -> {
+                            log.info("[Scheduling] http endpoint successfully published");
+                            startFuture.complete();
+                        }).doOnError((t) -> {
+                            log.error("[Scheduling] http endpoint could not be published");
+                        });
+
+                    }
                 });
-
+            } else {
+                startFuture.fail(readFile.cause());
             }
         });
 
