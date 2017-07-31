@@ -20,6 +20,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.http.HttpServer;
 import io.vertx.rxjava.ext.web.Router;
 import io.vertx.rxjava.ext.web.handler.CorsHandler;
+import io.vertx.rxjava.ext.web.handler.StaticHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,6 +103,14 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
                         .allowedMethod(HttpMethod.OPTIONS)
                         .allowedHeader("X-PINGARUNER")
                         .allowedHeader("Content-Type"));
+
+                router.route("/docs").handler(
+                        StaticHandler.create("src/main/resources/webroot/swagger-ui/index.html")
+                );
+
+                router.route("/docs/*").handler(
+                        StaticHandler.create("src/main/resources/webroot/swagger-ui")
+                );
 
                 Router swaggerRouter = SwaggerRouter.swaggerRouter(
                         router, swagger,
