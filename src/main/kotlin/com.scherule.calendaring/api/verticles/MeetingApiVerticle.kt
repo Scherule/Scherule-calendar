@@ -3,13 +3,13 @@ package com.scherule.calendaring.api.verticles
 import com.google.inject.Singleton
 import com.scherule.calendaring.api.MainApiException
 import com.scherule.calendaring.domain.Meeting
-import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
 import io.vertx.core.Handler
-import io.vertx.core.eventbus.Message
 import io.vertx.core.json.Json
 import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
+import io.vertx.rxjava.core.AbstractVerticle
+import io.vertx.rxjava.core.eventbus.Message
 import javax.inject.Inject
 
 @Singleton

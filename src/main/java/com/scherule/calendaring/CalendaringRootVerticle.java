@@ -13,11 +13,13 @@ import io.swagger.parser.SwaggerParser;
 import io.vertx.config.ConfigRetriever;
 import io.vertx.core.Future;
 import io.vertx.core.file.FileSystem;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.rxjava.core.http.HttpServer;
 import io.vertx.rxjava.ext.web.Router;
+import io.vertx.rxjava.ext.web.handler.CorsHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,8 +93,18 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
         vertxFileSystem.readFile("swagger.json", swaggerFile -> {
             if (swaggerFile.succeeded()) {
                 Swagger swagger = new SwaggerParser().parse(swaggerFile.result().toString(Charset.forName("utf-8")));
+
+
+                Router router = Router.router(rxVertx);
+                router.route().handler(CorsHandler.create("*")
+                        .allowedMethod(HttpMethod.GET)
+                        .allowedMethod(HttpMethod.POST)
+                        .allowedMethod(HttpMethod.OPTIONS)
+                        .allowedHeader("X-PINGARUNER")
+                        .allowedHeader("Content-Type"));
+
                 Router swaggerRouter = SwaggerRouter.swaggerRouter(
-                        Router.router(rxVertx), swagger,
+                        router, swagger,
                         rxVertx.eventBus(),
                         new OperationIdServiceIdResolver()
                 );
@@ -107,8 +119,6 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
 
                         String host = config.getString("http.host");
                         int port = config.getInteger("http.port");
-
-                        Router router = Router.router(rxVertx);
 
                         httpRequestServer = rxVertx.createHttpServer(
                                 new HttpServerOptions().setPort(port).setHost(host)
