@@ -2,6 +2,7 @@ package com.scherule.calendaring
 
 import io.restassured.RestAssured
 import io.restassured.RestAssured.given
+import io.restassured.http.ContentType
 import org.hamcrest.Matchers.notNullValue
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
@@ -47,6 +48,7 @@ class MeetingIntegrationTest {
                     }
                 ]
             }""")
+                .contentType(ContentType.JSON)
                 .`when`()
                 .post("/meeting")
                 .then()
