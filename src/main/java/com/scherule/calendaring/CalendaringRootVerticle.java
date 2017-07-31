@@ -5,9 +5,8 @@ import com.github.phiz71.rxjava.vertx.swagger.router.SwaggerRouter;
 import com.github.phiz71.vertx.swagger.router.OperationIdServiceIdResolver;
 import com.google.inject.Injector;
 import com.google.inject.Key;
-import com.google.inject.TypeLiteral;
 import com.rabbitmq.client.Channel;
-import com.scherule.calendaring.endpoints.Endpoint;
+import com.scherule.calendaring.api.verticles.MeetingApiVerticle;
 import com.scherule.commons.MicroServiceVerticle;
 import io.swagger.models.Swagger;
 import io.swagger.parser.SwaggerParser;
@@ -24,7 +23,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Set;
 
 import static com.google.inject.name.Names.named;
 
@@ -36,7 +34,7 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
     private final Channel schedulingChannel;
     private final SchedulingJobDispatcher schedulingJobDispatcher;
     private final SchedulingResultsConsumer schedulingResultsConsumer;
-    private final Set<Endpoint> endpoints;
+    private final MeetingApiVerticle meetingApiVerticle;
 
     private HttpServer httpRequestServer;
 
@@ -46,8 +44,7 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
         schedulingChannel = injector.getInstance(Key.get(Channel.class, named("scheduling.channel")));
         schedulingJobDispatcher = injector.getInstance(SchedulingJobDispatcher.class);
         schedulingResultsConsumer = injector.getInstance(SchedulingResultsConsumer.class);
-        endpoints = injector.getInstance(Key.get(new TypeLiteral<Set<Endpoint>>() {
-        }));
+        meetingApiVerticle = injector.getInstance(MeetingApiVerticle.class);
     }
 
     @Override
@@ -66,7 +63,7 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
     }
 
     private void deployVerticles(Future<Void> startFuture) {
-        vertx.deployVerticle("com.scherule.calendaring.api.verticles.MeetingApiVerticle", res -> {
+        vertx.deployVerticle(meetingApiVerticle, res -> {
             if (res.succeeded()) {
                 log.info("MeetingApiVerticle : Deployed");
             } else {
