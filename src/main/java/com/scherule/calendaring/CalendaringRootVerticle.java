@@ -66,12 +66,21 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
     }
 
     private void deployVerticles(Future<Void> startFuture) {
-        vertx.deployVerticle("io.swagger.server.api.verticle.MeetingApiVerticle", res -> {
+        vertx.deployVerticle("com.scherule.calendaring.api.verticles.MeetingApiVerticle", res -> {
             if (res.succeeded()) {
                 log.info("MeetingApiVerticle : Deployed");
             } else {
                 startFuture.fail(res.cause());
                 log.error("MeetingApiVerticle : Deployement failed");
+            }
+        });
+
+        vertx.deployVerticle("com.scherule.calendaring.api.verticles.SwaggerApiVerticle", res -> {
+            if (res.succeeded()) {
+                log.info("SwaggerApiVerticle : Deployed");
+            } else {
+                startFuture.fail(res.cause());
+                log.error("SwaggerApiVerticle : Deployement failed");
             }
         });
     }
@@ -82,9 +91,9 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
         Json.mapper.registerModule(new JavaTimeModule());
         FileSystem vertxFileSystem = vertx.fileSystem();
 
-        vertxFileSystem.readFile("swagger.json", readFile -> {
-            if (readFile.succeeded()) {
-                Swagger swagger = new SwaggerParser().parse(readFile.result().toString(Charset.forName("utf-8")));
+        vertxFileSystem.readFile("swagger.json", swaggerFile -> {
+            if (swaggerFile.succeeded()) {
+                Swagger swagger = new SwaggerParser().parse(swaggerFile.result().toString(Charset.forName("utf-8")));
                 Router swaggerRouter = SwaggerRouter.swaggerRouter(
                         Router.router(rxVertx), swagger,
                         rxVertx.eventBus(),
@@ -104,8 +113,6 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
 
                         Router router = Router.router(rxVertx);
 
-                        endpoints.forEach((endpoint) -> endpoint.mount(router));
-
                         httpRequestServer = rxVertx.createHttpServer(
                                 new HttpServerOptions().setPort(port).setHost(host)
                         ).requestHandler(swaggerRouter::accept).listen();
@@ -124,7 +131,7 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
                     }
                 });
             } else {
-                startFuture.fail(readFile.cause());
+                startFuture.fail(swaggerFile.cause());
             }
         });
 

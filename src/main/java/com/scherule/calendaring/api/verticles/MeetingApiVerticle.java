@@ -1,8 +1,8 @@
 package com.scherule.calendaring.api.verticles;
 
 import com.scherule.calendaring.api.MainApiException;
-import com.scherule.calendaring.api.impl.MeetingApiImpl;
 import com.scherule.calendaring.domain.Meeting;
+import com.scherule.calendaring.domain.services.MeetingService;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.Json;
@@ -18,7 +18,7 @@ public class MeetingApiVerticle extends AbstractVerticle {
     final static String REMOVEMEETING_SERVICE_ID = "removeMeeting";
     final static String UPDATEMEETING_SERVICE_ID = "updateMeeting";
 
-    MeetingApi service = new MeetingApiImpl();
+    MeetingApi service = new MeetingService();
 
     @Override
     public void start() throws Exception {
@@ -29,7 +29,7 @@ public class MeetingApiVerticle extends AbstractVerticle {
                 Meeting body = Json.mapper.readValue(message.body().getJsonObject("body").encode(), Meeting.class);
                 service.createMeeting(body, result -> {
                     if (result.succeeded())
-                        message.reply(null);
+                        message.reply(Json.encodePrettily(result.result()));
                     else {
                         Throwable cause = result.cause();
                         manageError(message, cause, "createMeeting");
@@ -47,7 +47,7 @@ public class MeetingApiVerticle extends AbstractVerticle {
                 String meetingId = message.body().getString("meetingId");
                 service.getMeeting(meetingId, result -> {
                     if (result.succeeded())
-                        message.reply(null);
+                        message.reply(Json.encodePrettily(result.result()));
                     else {
                         Throwable cause = result.cause();
                         manageError(message, cause, "getMeeting");
@@ -65,7 +65,7 @@ public class MeetingApiVerticle extends AbstractVerticle {
                 Long meetingId = Json.mapper.readValue(message.body().getString("meetingId"), Long.class);
                 service.removeMeeting(meetingId, result -> {
                     if (result.succeeded())
-                        message.reply(null);
+                        message.reply(Json.encodePrettily(result.result()));
                     else {
                         Throwable cause = result.cause();
                         manageError(message, cause, "removeMeeting");
@@ -83,7 +83,7 @@ public class MeetingApiVerticle extends AbstractVerticle {
                 Meeting body = Json.mapper.readValue(message.body().getJsonObject("body").encode(), Meeting.class);
                 service.updateMeeting(body, result -> {
                     if (result.succeeded())
-                        message.reply(null);
+                        message.reply(Json.encodePrettily(result.result()));
                     else {
                         Throwable cause = result.cause();
                         manageError(message, cause, "updateMeeting");

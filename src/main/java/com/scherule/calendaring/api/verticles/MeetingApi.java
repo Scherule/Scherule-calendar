@@ -6,12 +6,12 @@ import io.vertx.core.Handler;
 
 public interface MeetingApi {
 
-    void createMeeting(Meeting meeting, Handler<AsyncResult<Void>> handler);
+    void createMeeting(Meeting meeting, Handler<AsyncResult<Meeting>> handler);
 
-    void getMeeting(String meetingId, Handler<AsyncResult<Void>> handler);
+    void getMeeting(String meetingId, Handler<AsyncResult<Meeting>> handler);
 
     void removeMeeting(Long meetingId, Handler<AsyncResult<Void>> handler);
 
-    void updateMeeting(Meeting meeting, Handler<AsyncResult<Void>> handler);
+    void updateMeeting(Meeting meeting, Handler<AsyncResult<Meeting>> handler);
 
 }
