@@ -1,5 +1,6 @@
 package com.scherule.calendaring.api.verticles
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.AbstractModule
 import com.google.inject.Provides
 
@@ -10,8 +11,8 @@ class VerticlesModule : AbstractModule() {
     }
 
     @Provides
-    fun meetingApiVerticle(meetingApi: MeetingApi): MeetingApiVerticle {
-        return MeetingApiVerticle(meetingApi)
+    fun meetingApiVerticle(objectMapper: ObjectMapper, meetingApi: MeetingApi): MeetingApiVerticle {
+        return MeetingApiVerticle(objectMapper, meetingApi)
     }
 
     @Provides

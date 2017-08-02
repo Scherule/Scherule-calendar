@@ -7,15 +7,16 @@ import com.scherule.calendaring.domain.repositories.MeetingRepository
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
+import rx.Observable
 
 class MeetingService
 @Inject constructor(
         private val meetingRepository: MeetingRepository
 ): MeetingApi {
 
-    override fun createMeeting(meeting: Meeting, handler: Handler<AsyncResult<Meeting>>) {
+    override fun createMeeting(meeting: Meeting): Observable<Meeting> {
         meetingRepository.add(meeting)
-        handler.handle(Future.succeededFuture(meeting))
+        return Observable.just(meeting)
     }
 
     override fun getMeeting(meetingId: String, handler: Handler<AsyncResult<Meeting>>) {

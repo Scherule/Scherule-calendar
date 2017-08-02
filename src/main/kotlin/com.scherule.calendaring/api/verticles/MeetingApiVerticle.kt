@@ -1,5 +1,6 @@
 package com.scherule.calendaring.api.verticles
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.Singleton
 import com.scherule.calendaring.api.MainApiException
 import com.scherule.calendaring.domain.Meeting
@@ -10,11 +11,13 @@ import io.vertx.core.json.JsonObject
 import io.vertx.core.logging.LoggerFactory
 import io.vertx.rxjava.core.AbstractVerticle
 import io.vertx.rxjava.core.eventbus.Message
+import rx.Observable
 import javax.inject.Inject
 
 @Singleton
 class MeetingApiVerticle
 @Inject constructor(
+        private val objectMapper: ObjectMapper,
         private val meetingService: MeetingApi
 ) : AbstractVerticle() {
 
@@ -30,23 +33,25 @@ class MeetingApiVerticle
     @Throws(Exception::class)
     override fun start() {
 
-        //Consumer for createMeeting
-        vertx.eventBus().consumer<JsonObject>(CREATEMEETING_SERVICE_ID).handler { message ->
-            try {
-                val body = Json.mapper.readValue(message.body().getJsonObject("body").encode(), Meeting::class.java)
-                meetingService.createMeeting(body, Handler<AsyncResult<Meeting>> { result ->
-                    if (result.succeeded())
-                        message.reply(Json.encodePrettily(result.result()))
-                    else {
-                        val cause = result.cause()
-                        manageError(message, cause, "createMeeting")
-                    }
-                })
-            } catch (e: Exception) {
-                logUnexpectedError("createMeeting", e)
-                message.fail(MainApiException.INTERNAL_SERVER_ERROR.statusCode, MainApiException.INTERNAL_SERVER_ERROR.statusMessage)
-            }
-        }
+
+        vertx.eventBus().consumer<JsonObject>(CREATEMEETING_SERVICE_ID).toObservable()
+                .subscribe { message ->
+                    Observable.just(objectMapper.readValue(message.body().getJsonObject("body").encode(), Meeting::class.java))
+                            .flatMap(meetingService::createMeeting)
+                            .subscribe(
+                                    { message.reply(Json.encodePrettily(it)) },
+                                    { manageError(message, it, "createMeeting") }
+                            )
+                }
+
+//
+//        vertx.eventBus().consumer<JsonObject>(CREATEMEETING_SERVICE_ID).toObservable()
+//                .map { objectMapper.readValue(it.body().getJsonObject("body").encode(), Meeting::class.java) }
+//                .flatMap(meetingService::createMeeting)
+//                .subscribe(
+//                        { Json.encodePrettily(it) },
+//                        { throw it }
+//                )
 
         //Consumer for getMeeting
         vertx.eventBus().consumer<JsonObject>(GETMEETING_SERVICE_ID).handler { message ->
