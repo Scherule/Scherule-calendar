@@ -1,18 +1,17 @@
 package com.scherule.calendaring.api.verticles
 
 import com.scherule.calendaring.domain.Meeting
-import io.vertx.core.AsyncResult
-import io.vertx.core.Handler
-import rx.Observable
+import rx.Completable
+import rx.Single
 
 interface MeetingApi {
 
-    fun createMeeting(meeting: Meeting): Observable<Meeting>
+    fun createMeeting(meeting: Meeting): Single<Meeting>
 
-    fun getMeeting(meetingId: String, handler: Handler<AsyncResult<Meeting>>)
+    fun getMeeting(meetingId: String): Single<Meeting>
 
-    fun removeMeeting(meetingId: Long, handler: Handler<AsyncResult<Void>>)
+    fun removeMeeting(meetingId: Long): Completable
 
-    fun updateMeeting(meeting: Meeting, handler: Handler<AsyncResult<Meeting>>)
+    fun updateMeeting(meeting: Meeting): Single<Meeting>
 
 }

@@ -29,6 +29,7 @@ import java.nio.charset.Charset;
 
 import static com.google.inject.name.Names.named;
 
+// https://github.com/vert-x3/vertx-examples/blob/master/web-examples/src/main/java/io/vertx/example/web/rest/SimpleREST.java
 @SuppressWarnings("unused")
 public class CalendaringRootVerticle extends MicroServiceVerticle {
 
@@ -65,26 +66,6 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
         defineHttpServer(startFuture);
     }
 
-    private void deployVerticles(Future<Void> startFuture) {
-        vertx.deployVerticle(meetingApiVerticle, res -> {
-            if (res.succeeded()) {
-                log.info("MeetingApiVerticle : Deployed");
-            } else {
-                startFuture.fail(res.cause());
-                log.error("MeetingApiVerticle : Deployement failed");
-            }
-        });
-
-        vertx.deployVerticle("com.scherule.calendaring.api.verticles.SwaggerApiVerticle", res -> {
-            if (res.succeeded()) {
-                log.info("SwaggerApiVerticle : Deployed");
-            } else {
-                startFuture.fail(res.cause());
-                log.error("SwaggerApiVerticle : Deployement failed");
-            }
-        });
-    }
-
     private void defineHttpServer(Future<Void> startFuture) {
         ConfigRetriever retriever = ConfigRetriever.create(vertx);
 
@@ -95,8 +76,8 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
             if (swaggerFile.succeeded()) {
                 Swagger swagger = new SwaggerParser().parse(swaggerFile.result().toString(Charset.forName("utf-8")));
 
+                final Router router = Router.router(rxVertx);
 
-                Router router = Router.router(rxVertx);
                 router.route().handler(CorsHandler.create("*")
                         .allowedMethod(HttpMethod.GET)
                         .allowedMethod(HttpMethod.POST)
@@ -151,6 +132,26 @@ public class CalendaringRootVerticle extends MicroServiceVerticle {
             }
         });
 
+    }
+
+    private void deployVerticles(Future<Void> startFuture) {
+        vertx.deployVerticle(meetingApiVerticle, res -> {
+            if (res.succeeded()) {
+                log.info("MeetingApiVerticle : Deployed");
+            } else {
+                startFuture.fail(res.cause());
+                log.error("MeetingApiVerticle : Deployement failed");
+            }
+        });
+
+        vertx.deployVerticle("com.scherule.calendaring.api.verticles.SwaggerApiVerticle", res -> {
+            if (res.succeeded()) {
+                log.info("SwaggerApiVerticle : Deployed");
+            } else {
+                startFuture.fail(res.cause());
+                log.error("SwaggerApiVerticle : Deployement failed");
+            }
+        });
     }
 
 }

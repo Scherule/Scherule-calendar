@@ -52,7 +52,7 @@ class MeetingIntegrationTest {
                 .`when`()
                 .post("/meeting")
                 .then()
-                .statusCode(201)
+                .statusCode(200)
                 .and()
                 .body("meetingId.id", notNullValue())
     }
