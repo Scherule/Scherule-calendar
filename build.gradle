@@ -23,6 +23,7 @@ repositories {
     mavenLocal()
     maven { url "http://dl.bintray.com/kboom/scherule" }
     maven { url "http://dl.bintray.com/cy6ergn0m/maven" }
+    jcenter()
     mavenCentral()
 }
 
@@ -180,7 +181,7 @@ check {
 }
 
 dependencies {
-    compile "com.scherule:scherule-commons:1.1.1"
+    compile "com.scherule:scherule-commons:1.1.3"
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
@@ -191,6 +192,7 @@ dependencies {
     compile "io.vertx:vertx-service-discovery:$vertxVersion"
     compile "io.vertx:vertx-hazelcast:$vertxVersion"
     compile "io.vertx:vertx-config:$vertxVersion"
+    compile group: 'com.intapp', name: 'vertx-guice', version: '1.0'
     compile 'org.jetbrains.kotlinx:vertx3-lang-kotlin:0.0.+'
     compile group: 'com.rabbitmq', name: 'amqp-client', version: '4.1.1'
     compile 'com.google.inject:guice:4.1.0'
@@ -201,6 +203,7 @@ dependencies {
     compile group: 'org.ektorp', name: 'org.ektorp', version: '1.4.4'
     compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
     compile 'com.github.phiz71:vertx-swagger-router:1.3.0'
+    compile 'com.github.aesteve:nubes:1.3'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.4'
     compileOnly "io.vertx:vertx-codegen:$vertxVersion"
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M5'

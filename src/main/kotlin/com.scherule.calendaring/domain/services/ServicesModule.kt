@@ -2,7 +2,6 @@ package com.scherule.calendaring.domain.services
 
 import com.google.inject.AbstractModule
 import com.google.inject.Provides
-import com.scherule.calendaring.api.verticles.MeetingApi
 import com.scherule.calendaring.domain.repositories.MeetingRepository
 
 class ServicesModule : AbstractModule() {
@@ -12,7 +11,7 @@ class ServicesModule : AbstractModule() {
     }
 
     @Provides
-    fun meetingService(meetingRepository: MeetingRepository): MeetingApi {
+    fun meetingService(meetingRepository: MeetingRepository): MeetingService {
         return MeetingService(meetingRepository)
     }
 
