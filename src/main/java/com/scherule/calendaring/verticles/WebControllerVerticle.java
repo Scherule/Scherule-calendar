@@ -31,16 +31,10 @@ public class WebControllerVerticle extends MicroServiceVerticle {
     public void start(io.vertx.core.Future<Void> startFuture) {
         super.start(startFuture);
         configReader = ConfigRetriever.create(rxVertx);
-        defineHttpServer(Future.<Void>future().setHandler(handler -> {
-            if (handler.succeeded()) {
-                startFuture.tryComplete();
-            } else {
-                startFuture.tryFail(handler.cause());
-            }
-        }));
+        defineHttpServer(startFuture);
     }
 
-    private void defineHttpServer(Future<Void> startFuture) {
+    private void defineHttpServer(io.vertx.core.Future<Void> startFuture) {
         final Router router = Router.router(rxVertx);
 
         CompositeFuture.all(
@@ -77,8 +71,8 @@ public class WebControllerVerticle extends MicroServiceVerticle {
             ).doOnCompleted(() -> {
                 log.info("[Scheduling] http endpoint successfully published");
                 outcome.complete();
-            }).doOnError(outcome::fail).subscribe();
-        }, outcome::fail);
+            }).doOnError(outcome::tryFail).subscribe();
+        }, outcome::tryFail);
         return outcome;
     }
 
@@ -95,7 +89,7 @@ public class WebControllerVerticle extends MicroServiceVerticle {
                     );
                     outcome.complete();
                 },
-                outcome::fail
+                outcome::tryFail
         );
         fileSystem.readFile("swagger.json", observable.toHandler());
         return outcome;
