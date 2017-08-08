@@ -1,7 +1,6 @@
 package com.scherule.calendaring.verticles;
 
 import com.scherule.commons.MicroServiceVerticle;
-import io.vertx.rxjava.core.Future;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.json.JsonObject;
@@ -9,6 +8,7 @@ import io.vertx.rx.java.ObservableFuture;
 import io.vertx.rx.java.RxHelper;
 import io.vertx.rxjava.config.ConfigRetriever;
 import io.vertx.rxjava.core.CompositeFuture;
+import io.vertx.rxjava.core.Future;
 import io.vertx.rxjava.core.buffer.Buffer;
 import io.vertx.rxjava.core.file.FileSystem;
 import io.vertx.rxjava.ext.web.Router;
@@ -16,7 +16,6 @@ import io.vertx.rxjava.ext.web.handler.CorsHandler;
 import io.vertx.rxjava.ext.web.handler.StaticHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import rx.Observable;
 
 import java.nio.charset.Charset;
 
@@ -33,7 +32,7 @@ public class WebControllerVerticle extends MicroServiceVerticle {
         super.start(startFuture);
         configReader = ConfigRetriever.create(rxVertx);
         defineHttpServer(Future.<Void>future().setHandler(handler -> {
-            if(handler.succeeded()) {
+            if (handler.succeeded()) {
                 startFuture.tryComplete();
             } else {
                 startFuture.tryFail(handler.cause());
@@ -49,13 +48,14 @@ public class WebControllerVerticle extends MicroServiceVerticle {
                 configureSwaggerJSON(router),
                 configureSwaggerUI(router),
                 configureServer(router)
-        ).setHandler(ar -> {
-            if (ar.succeeded()) {
-                startFuture.succeeded();
-            } else {
-                startFuture.fail(ar.cause());
-            }
-        });
+        )
+                .rxSetHandler()
+                .doOnSuccess((t) -> {
+                    log.info("[Scheduling] http deployment complete");
+                    startFuture.complete();
+                })
+                .doOnError(startFuture::fail)
+                .subscribe();
     }
 
     private Future<Void> configureServer(Router router) {
@@ -74,15 +74,10 @@ public class WebControllerVerticle extends MicroServiceVerticle {
                     config.getString("http.name", "calendaring"),
                     host,
                     port
-            )
-                    .doOnCompleted(() -> {
-                        log.info("[Scheduling] http endpoint successfully published");
-                        outcome.succeeded();
-                    })
-                    .doOnError((t) -> {
-                        log.error("[Scheduling] http endpoint could not be published");
-                        outcome.fail(t);
-                    });
+            ).doOnCompleted(() -> {
+                log.info("[Scheduling] http endpoint successfully published");
+                outcome.complete();
+            }).doOnError(outcome::fail).subscribe();
         }, outcome::fail);
         return outcome;
     }
@@ -98,7 +93,7 @@ public class WebControllerVerticle extends MicroServiceVerticle {
                                     swaggerFile.toString(String.valueOf(Charset.forName("utf-8")))
                             )
                     );
-                    outcome.succeeded();
+                    outcome.complete();
                 },
                 outcome::fail
         );

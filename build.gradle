@@ -181,7 +181,7 @@ check {
 }
 
 dependencies {
-    compile "com.scherule:scherule-commons:1.1.3"
+    compile "com.scherule:scherule-commons:1.1.5"
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
