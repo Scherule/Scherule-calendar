@@ -49,8 +49,6 @@ paths:
           description: Created
         '405':
           description: Validation exception
-      x-contentType: application/json
-      x-accepts: application/json
     put:
       tags:
         - meeting
@@ -130,6 +128,21 @@ paths:
 definitions:
   Meeting:
     type: object
+    example:
+      parameters:
+        between: 1507040100000-1507046400000
+        minDuration: 18000000
+        minParticipants: 3
+      participants:
+        - id:
+            id: '321'
+          name: Greg
+          importance: 100
+          availability:
+            - interval: 1507040100000-1507046400000
+              preference: 1
+            - interval: 1507108500000-1507158000000
+              preference: 1
     properties:
       meetingId:
         type: string
