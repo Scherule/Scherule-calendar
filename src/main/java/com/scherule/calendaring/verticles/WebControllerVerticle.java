@@ -1,5 +1,7 @@
 package com.scherule.calendaring.verticles;
 
+import com.google.inject.Inject;
+import com.scherule.calendaring.controllers.MeetingController;
 import com.scherule.commons.MicroServiceVerticle;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
@@ -11,7 +13,9 @@ import io.vertx.rxjava.core.CompositeFuture;
 import io.vertx.rxjava.core.Future;
 import io.vertx.rxjava.core.buffer.Buffer;
 import io.vertx.rxjava.core.file.FileSystem;
+import io.vertx.rxjava.core.http.HttpServerResponse;
 import io.vertx.rxjava.ext.web.Router;
+import io.vertx.rxjava.ext.web.handler.BodyHandler;
 import io.vertx.rxjava.ext.web.handler.CorsHandler;
 import io.vertx.rxjava.ext.web.handler.StaticHandler;
 import org.slf4j.Logger;
@@ -27,6 +31,9 @@ public class WebControllerVerticle extends MicroServiceVerticle {
 
     private ConfigRetriever configReader;
 
+    @Inject
+    private MeetingController meetingController;
+
     @Override
     public void start(io.vertx.core.Future<Void> startFuture) {
         super.start(startFuture);
@@ -36,6 +43,12 @@ public class WebControllerVerticle extends MicroServiceVerticle {
 
     private void defineHttpServer(io.vertx.core.Future<Void> startFuture) {
         final Router router = Router.router(rxVertx);
+
+        router.route().handler(BodyHandler.create());
+        router.post("/meeting").handler(meetingController::postMeeting);
+        router.get("/meeting/:meetingId").handler(meetingController::getMeeting);
+        router.put("/meeting/:meetingId").handler(meetingController::putMeeting);
+        router.delete("/meeting/:meetingId").handler(meetingController::deleteMeeting);
 
         CompositeFuture.all(
                 configureCORS(router),
@@ -82,10 +95,14 @@ public class WebControllerVerticle extends MicroServiceVerticle {
         ObservableFuture<Buffer> observable = RxHelper.observableFuture();
         observable.subscribe(
                 swaggerFile -> {
-                    router.get("/api/swagger.json").handler(
-                            routingContext -> routingContext.response().end(
-                                    swaggerFile.toString(String.valueOf(Charset.forName("utf-8")))
-                            )
+                    router.get("/swagger.json").handler(
+                            routingContext -> {
+                                HttpServerResponse response = routingContext.response();
+                                response.headers().add("content-type", "application/json");
+                                response.end(
+                                        swaggerFile.toString(String.valueOf(Charset.forName("utf-8")))
+                                );
+                            }
                     );
                     outcome.complete();
                 },
