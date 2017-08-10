@@ -20,6 +20,7 @@ constructor(
         val meeting = meetingService.getMeeting(meetingId)
         routingContext.response()
                 .setStatusCode(200)
+                .putHeader("content-type", "application/json")
                 .end(objectMapper.writeValueAsString(meeting))
     }
 
@@ -28,6 +29,7 @@ constructor(
         meetingService.createMeeting(meetingToCreate)
         routingContext.response()
                 .setStatusCode(200)
+                .putHeader("content-type", "application/json")
                 .end(objectMapper.writeValueAsString(meetingToCreate))
     }
 
