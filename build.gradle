@@ -210,6 +210,7 @@ dependencies {
     compile group: 'org.ektorp', name: 'org.ektorp', version: '1.4.4'
     compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.4'
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.0'
     compileOnly "io.vertx:vertx-codegen:$vertxVersion"
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M5'
     testRuntime 'org.junit.platform:junit-platform-launcher:1.0.0-M5'

@@ -1,5 +1,7 @@
 package com.scherule.calendaring.verticles;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.inject.Inject;
 import com.scherule.calendaring.controllers.MeetingController;
 import com.scherule.commons.MicroServiceVerticle;
@@ -21,6 +23,7 @@ import io.vertx.rxjava.ext.web.handler.StaticHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 
 import static io.vertx.rxjava.core.Future.succeededFuture;
@@ -93,23 +96,35 @@ public class WebControllerVerticle extends MicroServiceVerticle {
         final Future<Void> outcome = Future.future();
         FileSystem fileSystem = rxVertx.fileSystem();
         ObservableFuture<Buffer> observable = RxHelper.observableFuture();
+
         observable.subscribe(
                 swaggerFile -> {
+                    String swaggerJson = convertToJSON(swaggerFile.toString());
                     router.get("/swagger.json").handler(
                             routingContext -> {
                                 HttpServerResponse response = routingContext.response();
                                 response.headers().add("content-type", "application/json");
-                                response.end(
-                                        swaggerFile.toString(String.valueOf(Charset.forName("utf-8")))
-                                );
+                                response.end(swaggerJson);
                             }
                     );
+
                     outcome.complete();
                 },
                 outcome::tryFail
         );
-        fileSystem.readFile("swagger.json", observable.toHandler());
+        fileSystem.readFile("swagger.yaml", observable.toHandler());
         return outcome;
+    }
+
+    private String convertToJSON(String swaggerFile) {
+        try {
+            ObjectMapper yamlReader = new ObjectMapper(new YAMLFactory());
+            Object obj = yamlReader.readValue(swaggerFile, Object.class);
+            ObjectMapper jsonWriter = new ObjectMapper();
+            return jsonWriter.writeValueAsString(obj);
+        } catch(Exception e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     private Future<Void> configureSwaggerUI(Router router) {
