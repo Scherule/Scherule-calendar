@@ -2,6 +2,7 @@ package com.scherule.calendaring.domain.services
 
 import com.google.inject.Inject
 import com.scherule.calendaring.domain.Meeting
+import com.scherule.calendaring.domain.MeetingId
 import com.scherule.calendaring.domain.repositories.MeetingRepository
 import rx.Completable
 import rx.Single
@@ -11,8 +12,8 @@ class MeetingService
         private val meetingRepository: MeetingRepository
 ){
 
-    fun getMeeting(meetingId: String): Single<Meeting> {
-        return Single.just(meetingRepository.get(meetingId))
+    fun getMeeting(meetingId: MeetingId): Single<Meeting> {
+        return Single.just(meetingRepository.get(meetingId.id))
     }
 
     fun removeMeeting(meetingId: Long): Completable {
@@ -24,8 +25,9 @@ class MeetingService
     }
 
     fun createMeeting(meeting: Meeting): Single<Meeting> {
-        meetingRepository.add(meeting)
-        return Single.just(meeting)
+        val boundMeeting = meeting.copy(MeetingId.meetingId("123"))
+        meetingRepository.add(boundMeeting)
+        return Single.just(boundMeeting)
     }
 
 }

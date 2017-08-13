@@ -14,6 +14,10 @@ class MeetingId(
             return meetingId(generateRandomHex(32))
         }
 
+        fun noMeetingId(): MeetingId {
+            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        }
+
     }
 
     override fun equals(other: Any?): Boolean {

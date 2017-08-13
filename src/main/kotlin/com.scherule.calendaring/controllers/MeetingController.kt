@@ -3,7 +3,6 @@ package com.scherule.calendaring.controllers
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.inject.Inject
 import com.google.inject.Singleton
-import com.scherule.calendaring.domain.Meeting
 import com.scherule.calendaring.domain.services.MeetingService
 import io.vertx.rxjava.ext.web.RoutingContext
 
@@ -17,20 +16,20 @@ constructor(
 
     fun getMeeting(routingContext: RoutingContext) {
         val meetingId = routingContext.request().getParam("meetingId")
-        val meeting = meetingService.getMeeting(meetingId)
-        routingContext.response()
-                .setStatusCode(200)
+        meetingService.getMeeting(meetingId).subscribe {
+            meeting -> routingContext.response().setStatusCode(200)
                 .putHeader("content-type", "application/json")
-                .end(objectMapper.writeValueAsString(meeting))
+                .end(objectMapper.writeValueAsString(meeting.toDetails()))
+        }
     }
 
     fun postMeeting(routingContext: RoutingContext) {
-        val meetingToCreate = objectMapper.readValue<Meeting>(routingContext.bodyAsString, Meeting::class.java)
-        meetingService.createMeeting(meetingToCreate)
-        routingContext.response()
-                .setStatusCode(200)
+        val meetingDetails = objectMapper.readValue<MeetingInformation>(routingContext.bodyAsString, MeetingInformation::class.java)
+        meetingService.createMeeting(meetingDetails).subscribe {
+            meeting -> routingContext.response().setStatusCode(201)
                 .putHeader("content-type", "application/json")
-                .end(objectMapper.writeValueAsString(meetingToCreate))
+                .end(objectMapper.writeValueAsString(meeting.toDetails()))
+        }
     }
 
     fun putMeeting(routingContext: RoutingContext) {

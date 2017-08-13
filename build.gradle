@@ -212,6 +212,11 @@ dependencies {
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.4'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.0'
     compileOnly "io.vertx:vertx-codegen:$vertxVersion"
+    testCompile 'info.cukes:cucumber-guice:1.2.5'
+    testCompile 'info.cukes:cucumber-java:1.2.5'
+    testCompile 'info.cukes:cucumber-junit:1.2.5'
+    testCompile 'org.assertj:assertj-core:3.8.0'
+    testCompile 'org.assertj:assertj-joda-time:2.0.0'
     testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M5'
     testRuntime 'org.junit.platform:junit-platform-launcher:1.0.0-M5'
     testRuntime 'org.junit.platform:junit-platform-runner:1.0.0-M5'
