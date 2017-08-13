@@ -25,9 +25,8 @@ class MeetingService
     }
 
     fun createMeeting(meeting: Meeting): Single<Meeting> {
-        val boundMeeting = meeting.copy(MeetingId.meetingId("123"))
-        meetingRepository.add(boundMeeting)
-        return Single.just(boundMeeting)
+        meetingRepository.add(meeting)
+        return Single.just(meeting)
     }
 
 }
