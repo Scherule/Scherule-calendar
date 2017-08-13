@@ -10,7 +10,11 @@ import cucumber.runtime.java.guice.InjectorSource
 class CucumberInjectorSource : InjectorSource {
 
     override fun getInjector(): Injector {
-        return Guice.createInjector(Stage.PRODUCTION, CucumberModules.SCENARIO, *APPLICATION_MODULES.toTypedArray());
+        return Guice.createInjector(
+                Stage.PRODUCTION,
+                CucumberModules.SCENARIO,
+                *APPLICATION_MODULES.toTypedArray()
+        );
     }
 
 }
