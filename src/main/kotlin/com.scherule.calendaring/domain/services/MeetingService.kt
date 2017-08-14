@@ -1,6 +1,7 @@
 package com.scherule.calendaring.domain.services
 
 import com.google.inject.Inject
+import com.scherule.calendaring.domain.KeychainGenerator
 import com.scherule.calendaring.domain.Meeting
 import com.scherule.calendaring.domain.MeetingId
 import com.scherule.calendaring.domain.repositories.MeetingRepository
@@ -9,7 +10,8 @@ import rx.Single
 
 class MeetingService
 @Inject constructor(
-        private val meetingRepository: MeetingRepository
+        private val meetingRepository: MeetingRepository,
+        private val keychainGenerator: KeychainGenerator
 ){
 
     fun getMeeting(meetingId: MeetingId): Single<Meeting> {
@@ -25,8 +27,9 @@ class MeetingService
     }
 
     fun createMeeting(meeting: Meeting): Single<Meeting> {
-        meetingRepository.add(meeting)
-        return Single.just(meeting)
+        val createdMeeting = meeting.create(MeetingId.newMeetingId(), keychainGenerator)
+        meetingRepository.add(createdMeeting)
+        return Single.just(createdMeeting)
     }
 
 }

@@ -6,8 +6,10 @@ import com.scherule.calendaring.domain.MeetingKeychain.Companion.EMPTY_KEYCHAIN
 class Meeting(
         val meetingId: MeetingId = newMeetingId(),
         val parameters: MeetingParameters,
+        val manager: ParticipantId,
         val participants: Set<Participant>,
-        val keychain: MeetingKeychain = EMPTY_KEYCHAIN
+        val keychain: MeetingKeychain = EMPTY_KEYCHAIN,
+        val meetingState: MeetingState = MeetingState.INITIAL
 ) : AbstractEntity() {
 
     override fun equals(other: Any?): Boolean {
@@ -30,6 +32,20 @@ class Meeting(
 
     override fun toString(): String {
         return "Meeting(id=$id, parameters=$parameters, participants=$participants)"
+    }
+
+    fun create(
+            newMeetingId: MeetingId,
+            keychainGenerator: KeychainGenerator
+    ): Meeting {
+        return Meeting(
+                newMeetingId,
+                parameters,
+                manager,
+                participants,
+                keychainGenerator.generateFor(this),
+                MeetingState.CREATED
+        )
     }
 
 }

@@ -8,7 +8,7 @@ import org.joda.time.Interval
 
 class MeetingBuilder {
 
-    private var meetingId = noMeetingId()
+    private var meetingId = noMeetingId
     private var between = Interval.parse("2017-10-01T00:00Z/2017-10-30T16:00Z")
     private var minParticipants = 1
     private var minDuration = Duration.standardHours(5)
@@ -42,6 +42,7 @@ class MeetingBuilder {
                     minDuration,
                     minParticipants
             ),
+            manager,
             participants
     )
 

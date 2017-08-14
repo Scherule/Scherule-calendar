@@ -6,16 +6,14 @@ class MeetingId(
 
     companion object {
 
+        val noMeetingId = MeetingId("")
+
         fun meetingId(id: String) : MeetingId {
             return MeetingId(id)
         }
 
         fun newMeetingId() : MeetingId {
             return meetingId(generateRandomHex(32))
-        }
-
-        fun noMeetingId(): MeetingId {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
 
     }
