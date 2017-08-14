@@ -27,7 +27,7 @@ class MeetingService
     }
 
     fun createMeeting(meeting: Meeting): Single<Meeting> {
-        val createdMeeting = meeting.create(MeetingId.newMeetingId(), keychainGenerator)
+        val createdMeeting = meeting.initiate(MeetingId.newMeetingId(), keychainGenerator)
         meetingRepository.add(createdMeeting)
         return Single.just(createdMeeting)
     }

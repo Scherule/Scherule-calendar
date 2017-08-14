@@ -7,10 +7,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonInclude(NON_NULL)
 @JsonIgnoreProperties("id", "revision")
-abstract class AbstractEntity {
+abstract class AbstractEntity(identifier: Identifiable) {
 
     @JsonProperty("_id")
-    val id: String? = null
+    val id: String? = identifier.getIdentifier()
 
     @JsonProperty("_rev")
     val revision: String? = null

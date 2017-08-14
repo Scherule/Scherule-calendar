@@ -2,17 +2,19 @@ package com.scherule.calendaring.domain
 
 class MeetingId(
         val id: String
-) {
+) : Identifiable {
+
+    override fun getIdentifier() = id
 
     companion object {
 
         val noMeetingId = MeetingId("")
 
-        fun meetingId(id: String) : MeetingId {
+        fun meetingId(id: String): MeetingId {
             return MeetingId(id)
         }
 
-        fun newMeetingId() : MeetingId {
+        fun newMeetingId(): MeetingId {
             return meetingId(generateRandomHex(32))
         }
 
