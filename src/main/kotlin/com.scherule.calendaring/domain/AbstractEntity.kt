@@ -1,12 +1,10 @@
 package com.scherule.calendaring.domain
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL
 import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonInclude(NON_NULL)
-@JsonIgnoreProperties("id", "revision")
 abstract class AbstractEntity(
         id: String?,
         revision: String?
