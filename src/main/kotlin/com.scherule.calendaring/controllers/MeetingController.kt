@@ -17,7 +17,7 @@ constructor(
 ){
 
     fun getMeeting(routingContext: RoutingContext) {
-        val meetingId = routingContext.request().getParam("meetingId")
+        val meetingId = routingContext.request().getParam("id")
         meetingService.getMeeting(MeetingId.meetingId(meetingId)).subscribe {
             meeting -> routingContext.response().setStatusCode(200)
                 .putHeader("content-type", "application/json")

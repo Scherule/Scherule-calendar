@@ -49,9 +49,9 @@ public class WebControllerVerticle extends MicroServiceVerticle {
 
         router.route().handler(BodyHandler.create());
         router.post("/meeting").handler(meetingController::postMeeting);
-        router.get("/meeting/:meetingId").handler(meetingController::getMeeting);
-        router.put("/meeting/:meetingId").handler(meetingController::putMeeting);
-        router.delete("/meeting/:meetingId").handler(meetingController::deleteMeeting);
+        router.get("/meeting/:id").handler(meetingController::getMeeting);
+        router.put("/meeting/:id").handler(meetingController::putMeeting);
+        router.delete("/meeting/:id").handler(meetingController::deleteMeeting);
 
         CompositeFuture.all(
                 configureCORS(router),

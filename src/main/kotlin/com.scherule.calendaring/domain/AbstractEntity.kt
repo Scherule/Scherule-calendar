@@ -7,13 +7,16 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 @JsonInclude(NON_NULL)
 @JsonIgnoreProperties("id", "revision")
-abstract class AbstractEntity(identifier: Identifiable) {
+abstract class AbstractEntity(
+        id: String?,
+        revision: String?
+) {
 
     @JsonProperty("_id")
-    val id: String? = identifier.getIdentifier()
+    val id: String? = id
 
     @JsonProperty("_rev")
-    val revision: String? = null
+    val revision: String? = revision
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

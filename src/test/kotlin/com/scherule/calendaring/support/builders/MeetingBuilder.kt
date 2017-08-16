@@ -36,15 +36,14 @@ class MeetingBuilder {
     }
 
     fun build(): Meeting = Meeting(
-            meetingId,
-            MeetingParameters(
+            meetingId = meetingId,
+            parameters = MeetingParameters(
                     between,
                     minDuration,
                     minParticipants
             ),
-            manager,
-            participants
+            manager = manager,
+            participants = participants
     )
-
 
 }

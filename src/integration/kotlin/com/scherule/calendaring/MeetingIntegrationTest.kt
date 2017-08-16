@@ -54,7 +54,7 @@ class MeetingIntegrationTest {
                 .then()
                 .statusCode(200)
                 .and()
-                .body("meetingId.id", notNullValue())
+                .body("id.id", notNullValue())
     }
 
 }

@@ -107,7 +107,7 @@ internal class SerializationTests {
     @Test
     fun canSerializeMeeting() {
         assertEquals(
-                "{\"meetingId\":{\"id\":\"123\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"manager\":{\"id\":\"master\"},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}],\"keychain\":{\"managementKey\":{\"owner\":{\"id\":\"abc\"},\"hash\":\"\"},\"participationKeys\":{}},\"meetingState\":\"CREATED\"}",
+                "{\"id\":{\"id\":\"123\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"manager\":{\"id\":\"master\"},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}],\"keychain\":{\"managementKey\":{\"owner\":{\"id\":\"abc\"},\"hash\":\"\"},\"participationKeys\":{}},\"meetingState\":\"CREATED\"}",
                 objectMapper.writeValueAsString(Meeting(
                         meetingId = MeetingId.meetingId("123"),
                         parameters = MeetingParameters(
@@ -156,7 +156,7 @@ internal class SerializationTests {
                         ),
                         meetingState = MeetingState.CREATED
                 ),
-                objectMapper.readValue("{\"meetingId\":{\"id\":\"123\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"manager\":{\"id\":\"master\"},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}],\"keychain\":{\"managementKey\":{\"owner\":{\"id\":\"abc\"},\"hash\":\"\"},\"participationKeys\":{}},\"meetingState\":\"CREATED\"}", Meeting::class.java)
+                objectMapper.readValue("{\"id\":{\"id\":\"123\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"manager\":{\"id\":\"master\"},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}],\"keychain\":{\"managementKey\":{\"owner\":{\"id\":\"abc\"},\"hash\":\"\"},\"participationKeys\":{}},\"meetingState\":\"CREATED\"}", Meeting::class.java)
         )
     }
 
