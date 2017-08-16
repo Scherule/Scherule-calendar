@@ -82,7 +82,7 @@ internal class CalendaringSteps @Inject constructor(
 
     @Then("this meeting is created")
     fun thenThisMeetingIsCreated() {
-        assertThat(meetingService.getMeeting(meeting!!.getMeetingId())).isEqualTo(meeting)
+        assertThat(meetingService.getMeeting(meeting!!.getMeetingId()).toBlocking().value()).isEqualTo(meeting)
     }
 
     @Then("management key bound to '([^']*)' can be obtained for this meeting")
