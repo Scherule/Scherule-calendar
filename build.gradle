@@ -98,6 +98,13 @@ sourceSets {
         resources.srcDir file('src/integration/resources')
     }
 
+    e2e {
+        java {
+            srcDir file('src/e2e/java')
+        }
+        resources.srcDir file('src/e2e/resources')
+    }
+
 }
 
 shadowJar {
@@ -165,26 +172,26 @@ task stopMyAppContainer(type: DockerStopContainer) {
     targetContainerId { createMyAppContainer.getContainerId() }
 }
 
-task integrationTest(
+task e2eTest(
         type: JavaExec,
-        description: 'Runs the integration tests.',
+        description: 'Runs the e2e tests.',
         group: 'Verification'
 ) {
     dependsOn testClasses, startMyAppContainer, allocatePort
     shouldRunAfter test
     finalizedBy stopMyAppContainer
 
-    classpath = sourceSets.integration.runtimeClasspath
+    classpath = sourceSets.e2e.runtimeClasspath
 
     main = 'org.junit.platform.console.ConsoleLauncher'
     jvmArgs = ["-Dhttp.port=${allocatePort.ext.port}"]
     args = ['--scan-class-path',
-            sourceSets.integration.output.getClassesDirs().asPath,
-            '--reports-dir', "${buildDir}/test-results/junit-integration"]
+            sourceSets.e2e.output.getClassesDirs().asPath,
+            '--reports-dir', "${buildDir}/test-results/junit-e2e"]
 }
 
 check {
-    dependsOn integrationTest
+    dependsOn e2eTest
 }
 
 dependencies {
@@ -224,7 +231,21 @@ dependencies {
     testCompile "io.vertx:vertx-unit:$vertxVersion"
 
     integrationCompile 'org.junit.platform:junit-platform-console:1.0.0-M5'
-    integrationCompile 'io.rest-assured:rest-assured:3.0.3'
-    integrationCompile 'io.rest-assured:json-path:3.0.3'
-    integrationCompile 'io.rest-assured:json-schema-validator:3.0.3'
+
+    e2eCompile 'org.jetbrains.kotlinx:vertx3-lang-kotlin:0.0.+'
+    e2eCompile 'com.google.inject:guice:4.1.0'
+    e2eCompile 'com.google.inject.extensions:guice-multibindings:4.1.0'
+    e2eCompile 'info.cukes:cucumber-guice:1.2.5'
+    e2eCompile 'info.cukes:cucumber-java:1.2.5'
+    e2eCompile 'info.cukes:cucumber-junit:1.2.5'
+    e2eCompile 'org.assertj:assertj-core:3.8.0'
+    e2eCompile 'org.assertj:assertj-joda-time:2.0.0'
+    e2eCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M5'
+    e2eCompile 'org.junit.platform:junit-platform-launcher:1.0.0-M5'
+    e2eCompile 'org.junit.platform:junit-platform-runner:1.0.0-M5'
+    e2eCompile 'org.junit.jupiter:junit-jupiter-engine:5.0.0-M5'
+    e2eCompile 'org.junit.platform:junit-platform-console:1.0.0-M5'
+    e2eCompile 'io.rest-assured:rest-assured:3.0.3'
+    e2eCompile 'io.rest-assured:json-path:3.0.3'
+    e2eCompile 'io.rest-assured:json-schema-validator:3.0.3'
 }

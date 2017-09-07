@@ -1,4 +1,4 @@
-package com.scherule.calendaring
+package com.scherule.e2e.calendaring
 
 import io.restassured.RestAssured
 import io.restassured.RestAssured.given
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 
 @Tag("integration-test")
-class MeetingIntegrationTest {
+class MeetingE2ETest {
 
     companion object {
 

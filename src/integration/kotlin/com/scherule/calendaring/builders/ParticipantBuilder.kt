@@ -1,4 +1,4 @@
-package com.scherule.calendaring.support.builders
+package com.scherule.calendaring.builders
 
 import com.scherule.calendaring.domain.Availability
 import com.scherule.calendaring.domain.Participant

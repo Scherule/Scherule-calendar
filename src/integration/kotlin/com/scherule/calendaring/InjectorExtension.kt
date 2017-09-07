@@ -1,4 +1,4 @@
-package com.scherule.calendaring.domain
+package com.scherule.calendaring
 
 import com.google.inject.Guice
 import com.google.inject.Injector

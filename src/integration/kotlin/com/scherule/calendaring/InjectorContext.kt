@@ -1,4 +1,4 @@
-package com.scherule.calendaring.domain
+package com.scherule.calendaring
 
 import com.google.inject.Module
 import kotlin.reflect.KClass
