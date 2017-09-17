@@ -11,6 +11,7 @@ buildscript {
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M5'
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
         classpath "com.bmuschko:gradle-docker-plugin:3.0.8"
     }
 
@@ -33,7 +34,7 @@ scheruleProject {
 }
 
 junitPlatform {
-    platformVersion '1.0.0-M5'
+    platformVersion junit_platform_version
     logManager 'java.util.logging.LogManager'
     enableStandardTestTask true
 
@@ -90,6 +91,18 @@ dependencies {
 
     // time
     compile "joda-time:joda-time:2.9.9"
+
+    // database
+    compile "org.hibernate:hibernate-validator:$hibernate_version"
+    compile "org.hibernate:hibernate-validator-annotation-processor:$hibernate_version"
+
+    // queues
+    compile "org.apache.activemq:activemq-broker:5.15.0"
+
+    // docs
+    compile "io.springfox:springfox-swagger-ui:$swagger_version"
+    compile "io.springfox:springfox-swagger2:$swagger_version"
+    compile "io.springfox:springfox-bean-validators:$swagger_version"
 
     /**
      * Unit & Integration tests

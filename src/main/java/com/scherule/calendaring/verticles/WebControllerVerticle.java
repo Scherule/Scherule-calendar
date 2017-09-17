@@ -3,7 +3,7 @@ package com.scherule.calendaring.verticles;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.inject.Inject;
-import com.scherule.calendaring.controllers.MeetingController;
+import com.scherule.calendaring.endpoints.controllers.MeetingController;
 import com.scherule.commons.MicroServiceVerticle;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerOptions;
@@ -22,9 +22,6 @@ import io.vertx.rxjava.ext.web.handler.CorsHandler;
 import io.vertx.rxjava.ext.web.handler.StaticHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
 
 import static io.vertx.rxjava.core.Future.succeededFuture;
 

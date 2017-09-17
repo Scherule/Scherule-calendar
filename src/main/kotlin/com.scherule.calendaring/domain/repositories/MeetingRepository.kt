@@ -1,14 +1,9 @@
 package com.scherule.calendaring.domain.repositories
 
-import com.google.inject.Inject
-import com.google.inject.Singleton
 import com.scherule.calendaring.domain.Meeting
-import org.ektorp.CouchDbConnector
-import org.ektorp.support.CouchDbRepositorySupport
+import com.scherule.calendaring.domain.MeetingId
+import org.springframework.data.repository.CrudRepository
+import org.springframework.stereotype.Repository
 
-@Singleton
-class MeetingRepository
-@Inject
-constructor(connector: CouchDbConnector)
-    : CouchDbRepositorySupport<Meeting>(Meeting::class.java, connector) {
-}
+@Repository
+interface MeetingRepository : CrudRepository<Meeting, MeetingId>

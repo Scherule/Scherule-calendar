@@ -1,16 +1,16 @@
 package com.scherule.calendaring.domain
 
-class MeetingId(
-        val id: String? = null
-) : Identifiable {
+import java.io.Serializable
 
-    override fun getIdentifier(): String? = id
+class MeetingId(
+        val id: String
+) : Serializable {
 
     companion object {
 
-        val noMeetingId = MeetingId()
+        val noMeetingId = MeetingId("")
 
-        fun meetingId(id: String?): MeetingId {
+        fun meetingId(id: String): MeetingId {
             return MeetingId(id)
         }
 
@@ -20,9 +20,13 @@ class MeetingId(
 
     }
 
+    override fun toString(): String {
+        return "MeetingId(id='$id')"
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other?.javaClass != javaClass) return false
+        if (javaClass != other?.javaClass) return false
 
         other as MeetingId
 
@@ -32,11 +36,7 @@ class MeetingId(
     }
 
     override fun hashCode(): Int {
-        return if (id === null) 1 else id.hashCode()
-    }
-
-    override fun toString(): String {
-        return "MeetingId(id='$id')"
+        return id.hashCode()
     }
 
 }

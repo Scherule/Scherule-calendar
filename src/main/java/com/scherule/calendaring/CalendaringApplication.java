@@ -3,11 +3,7 @@ package com.scherule.calendaring;
 import com.google.inject.Module;
 import com.intapp.vertx.guice.GuiceVertxLauncher;
 import com.intapp.vertx.guice.VertxModule;
-import com.scherule.calendaring.controllers.ControllersModule;
-import com.scherule.calendaring.domain.services.ServicesModule;
-import com.scherule.calendaring.modules.CalendaringDomainModule;
-import com.scherule.calendaring.modules.CalendaringQueueModule;
-import com.scherule.calendaring.modules.PersistenceModule;
+import com.scherule.calendaring.configuration.CalendaringQueueConfiguration;
 import io.vertx.core.Vertx;
 
 import java.util.List;
@@ -20,7 +16,7 @@ public class CalendaringApplication extends GuiceVertxLauncher {
     public static final List<Module> APPLICATION_MODULES = unmodifiableList(
             asList(
                     new ServicesModule(),
-                    new CalendaringQueueModule(),
+                    new CalendaringQueueConfiguration(),
                     new PersistenceModule(),
                     new CalendaringDomainModule(),
                     new ControllersModule()

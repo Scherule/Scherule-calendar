@@ -3,7 +3,7 @@ package com.scherule.calendaring.verticles;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import com.rabbitmq.client.Channel;
-import com.scherule.calendaring.SchedulingResultsConsumer;
+import com.scherule.calendaring.endpoints.messaging.SchedulingResultsConsumer;
 import com.scherule.commons.MicroServiceVerticle;
 import io.vertx.core.Future;
 

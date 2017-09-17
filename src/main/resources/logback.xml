@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-
-    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <layout class="ch.qos.logback.classic.PatternLayout">
-            <Pattern>
-                %d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n
-            </Pattern>
-        </layout>
-    </appender>
-
-    <logger name="com.scherule.calendaring" level="debug"
-            additivity="false">
-        <appender-ref ref="STDOUT" />
-    </logger>
-
-    <root level="error">
-        <appender-ref ref="STDOUT" />
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+    <property name="LOG_FILE" value="./logs/spring-boot.log}"/>
+    <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+    <root level="INFO">
+        <appender-ref ref="FILE" />
+        <appender-ref ref="CONSOLE" />
     </root>
-
 </configuration>

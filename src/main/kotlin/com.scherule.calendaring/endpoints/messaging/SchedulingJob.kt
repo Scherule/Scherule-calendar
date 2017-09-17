@@ -1,4 +1,4 @@
-package com.scherule.calendaring
+package com.scherule.calendaring.endpoints.messaging
 
 import com.scherule.calendaring.domain.MeetingParameters
 import com.scherule.calendaring.domain.Participant
