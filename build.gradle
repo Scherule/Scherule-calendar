@@ -95,6 +95,7 @@ dependencies {
     // database
     compile "org.hibernate:hibernate-validator:$hibernate_version"
     compile "org.hibernate:hibernate-validator-annotation-processor:$hibernate_version"
+    compile 'org.postgresql:postgresql:9.4-1206-jdbc42'
 
     // queues
     compile "org.apache.activemq:activemq-broker:5.15.0"
@@ -113,15 +114,14 @@ dependencies {
     testCompile 'org.assertj:assertj-joda-time:2.0.0'
 
     // platform
-    testCompile "org.junit.jupiter:junit-jupiter-api:$junit_version"
-    testRuntime "org.junit.jupiter:junit-jupiter-engine:$junit_version"
+    testCompile "org.junit.vintage:junit-vintage-engine:$junit_vintage_version"
     testRuntime "org.junit.platform:junit-platform-launcher:$junit_platform_version"
     testRuntime "org.junit.platform:junit-platform-runner:$junit_platform_version"
 
     /**
      * Integration tests
      */
-
+    integrationCompile 'com.h2database:h2:1.4.196'
     integrationCompile "info.cukes:cucumber-spring:$cucumber_version"
     integrationCompile "info.cukes:cucumber-java:$cucumber_version"
     integrationCompile "info.cukes:cucumber-junit:$cucumber_version"

@@ -17,4 +17,6 @@ dependencies {
             "org.springframework.boot:spring-boot-starter-data-jpa",
             "org.springframework.boot:spring-boot-starter-activemq",
             "org.springframework.boot:spring-boot-starter-data-jpa"
+
+    integrationCompile "org.springframework.boot:spring-boot-starter-test"
 }

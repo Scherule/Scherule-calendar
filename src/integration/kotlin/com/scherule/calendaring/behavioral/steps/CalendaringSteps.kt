@@ -1,25 +1,25 @@
 package com.scherule.calendaring.behavioral.steps
 
-import com.scherule.calendaring.domain.Meeting
-import com.scherule.calendaring.domain.ParticipantId
-import com.scherule.calendaring.domain.services.MeetingService
 import com.scherule.calendaring.builders.MeetingBuilder
 import com.scherule.calendaring.builders.MeetingBuilder.Companion.aMeeting
 import com.scherule.calendaring.builders.ParticipantBuilder
 import com.scherule.calendaring.builders.ParticipantBuilder.Companion.aParticipant
+import com.scherule.calendaring.domain.Meeting
+import com.scherule.calendaring.domain.ParticipantId
+import com.scherule.calendaring.domain.services.MeetingService
 import com.scherule.scheduling.converters.IntervalConverter
 import cucumber.api.Transform
 import cucumber.api.java.en.Given
 import cucumber.api.java.en.Then
 import cucumber.api.java.en.When
-import cucumber.runtime.java.guice.ScenarioScoped
 import org.assertj.core.api.Assertions.assertThat
 import org.joda.time.Interval
+import org.springframework.beans.factory.annotation.Autowired
 import java.util.*
-import javax.inject.Inject
 
-@ScenarioScoped
-internal class CalendaringSteps @Inject constructor(
+
+internal class CalendaringSteps
+@Autowired constructor(
         private val meetingService: MeetingService
 ) {
 
@@ -77,12 +77,12 @@ internal class CalendaringSteps @Inject constructor(
                                 *participantBuilderMap.values.map(ParticipantBuilder::build).toTypedArray()
                         )
                         .build()
-        ).toBlocking().value()
+        )
     }
 
     @Then("this meeting is created")
     fun thenThisMeetingIsCreated() {
-        assertThat(meetingService.getMeeting(meeting!!.getMeetingId()).toBlocking().value()).isEqualTo(meeting)
+        assertThat(meetingService.getMeeting(meeting!!.meetingId)).isEqualTo(meeting)
     }
 
     @Then("management key bound to '([^']*)' can be obtained for this meeting")
