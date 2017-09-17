@@ -1,6 +1,4 @@
 buildscript {
-    ext.kotlin_version = '1.1.3'
-    ext.spring_version = '1.5.7.RELEASE'
 
     repositories {
         mavenLocal()
@@ -70,44 +68,79 @@ check {
 
 dependencies {
 
-    compile "com.scherule:scherule-commons:1.1.6"
-    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    compile group: 'com.rabbitmq', name: 'amqp-client', version: '4.1.1'
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.4'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.9'
-    compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.8.9'
-    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.0'
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.9"
-    compile group: 'org.ektorp', name: 'org.ektorp', version: '1.4.4'
-    compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
+    /**
+     * Main
+     */
 
-    testCompile 'info.cukes:cucumber-guice:1.2.5'
-    testCompile 'info.cukes:cucumber-java:1.2.5'
-    testCompile 'info.cukes:cucumber-junit:1.2.5'
+    // internal
+    compile "com.scherule:scherule-commons:1.1.6"
+
+    // logging
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
+    // queues
+    compile group: 'com.rabbitmq', name: 'amqp-client', version: '4.1.1'
+
+    // mapping
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
+    compile "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-joda:$jackson_version"
+    compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jackson_version"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
+
+    // time
+    compile "joda-time:joda-time:2.9.9"
+
+    /**
+     * Unit & Integration tests
+     */
+
+    // assertions
     testCompile 'org.assertj:assertj-core:3.8.0'
     testCompile 'org.assertj:assertj-joda-time:2.0.0'
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M5'
-    testRuntime 'org.junit.platform:junit-platform-launcher:1.0.0-M5'
-    testRuntime 'org.junit.platform:junit-platform-runner:1.0.0-M5'
-    testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.0-M5'
 
+    // platform
+    testCompile "org.junit.jupiter:junit-jupiter-api:$junit_version"
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:$junit_version"
+    testRuntime "org.junit.platform:junit-platform-launcher:$junit_platform_version"
+    testRuntime "org.junit.platform:junit-platform-runner:$junit_platform_version"
+
+    /**
+     * Integration tests
+     */
+
+    integrationCompile "info.cukes:cucumber-spring:$cucumber_version"
+    integrationCompile "info.cukes:cucumber-java:$cucumber_version"
+    integrationCompile "info.cukes:cucumber-junit:$cucumber_version"
     integrationCompile 'org.junit.platform:junit-platform-console:1.0.0-M5'
 
-    e2eCompile 'com.google.inject:guice:4.1.0'
-    e2eCompile 'com.google.inject.extensions:guice-multibindings:4.1.0'
-    e2eCompile 'info.cukes:cucumber-guice:1.2.5'
-    e2eCompile 'info.cukes:cucumber-java:1.2.5'
-    e2eCompile 'info.cukes:cucumber-junit:1.2.5'
-    e2eCompile 'org.assertj:assertj-core:3.8.0'
+    /**
+     * E2E tests (separate classpath)
+     */
+
+    // platform
+    e2eCompile "org.junit.jupiter:junit-jupiter-api:$junit_version"
+    e2eRuntime "org.junit.jupiter:junit-jupiter-engine:$junit_version"
+    e2eRuntime "org.junit.platform:junit-platform-launcher:$junit_platform_version"
+    e2eRuntime "org.junit.platform:junit-platform-runner:$junit_platform_version"
+    e2eRuntime "org.junit.platform:junit-platform-console:$junit_platform_version"
+
+    // assertions
+    e2eCompile "org.assertj:assertj-core:$assertj_version"
     e2eCompile 'org.assertj:assertj-joda-time:2.0.0'
-    e2eCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M5'
-    e2eCompile 'org.junit.platform:junit-platform-launcher:1.0.0-M5'
-    e2eCompile 'org.junit.platform:junit-platform-runner:1.0.0-M5'
-    e2eCompile 'org.junit.jupiter:junit-jupiter-engine:5.0.0-M5'
-    e2eCompile 'org.junit.platform:junit-platform-console:1.0.0-M5'
-    e2eCompile 'io.rest-assured:rest-assured:3.0.3'
-    e2eCompile 'io.rest-assured:json-path:3.0.3'
-    e2eCompile 'io.rest-assured:json-schema-validator:3.0.3'
+
+    // guice
+    e2eCompile "com.google.inject:guice:$guice_version"
+    e2eCompile "com.google.inject.extensions:guice-multibindings:$guice_version"
+
+    // cucumber
+    e2eCompile "info.cukes:cucumber-guice:$cucumber_version"
+    e2eCompile "info.cukes:cucumber-java:$cucumber_version"
+    e2eCompile "info.cukes:cucumber-junit:$cucumber_version"
+
+    // rest assured
+    e2eCompile "io.rest-assured:rest-assured:$rest_assured_version"
+    e2eCompile "io.rest-assured:json-path:$rest_assured_version"
+    e2eCompile "io.rest-assured:json-schema-validator:$rest_assured_version"
+
 }
