@@ -207,6 +207,7 @@ dependencies {
     compile "io.vertx:vertx-hazelcast:$vertxVersion"
     compile "io.vertx:vertx-config:$vertxVersion"
     compile group: 'com.intapp', name: 'vertx-guice', version: '1.0'
+    compile 'com.google.guava:guava:23.0'
     compile 'org.jetbrains.kotlinx:vertx3-lang-kotlin:0.0.+'
     compile group: 'com.rabbitmq', name: 'amqp-client', version: '4.1.1'
     compile 'com.google.inject:guice:4.1.0'
