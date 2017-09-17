@@ -1,119 +1,39 @@
-import com.bmuschko.gradle.docker.tasks.container.DockerCreateContainer
-import com.bmuschko.gradle.docker.tasks.container.DockerStartContainer
-import com.bmuschko.gradle.docker.tasks.container.DockerStopContainer
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.scherule.buildtools.ScheruleProjectVersion
 
 buildscript {
     ext.kotlin_version = '1.1.3'
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'com.bmuschko', name: 'gradle-docker-plugin', version: '3.0.8'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M5'
-    }
-}
+    ext.spring_version = '1.5.7.RELEASE'
 
-plugins {
-    id 'com.github.johnrengelman.shadow' version '2.0.1'
+    repositories {
+        mavenLocal()
+        maven { url "http://dl.bintray.com/kboom/scherule" }
+        jcenter()
+    }
+
+    dependencies {
+        classpath "com.scherule:scherule-buildtools:1.0.0"
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M5'
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.bmuschko:gradle-docker-plugin:3.0.8"
+    }
+
 }
 
 repositories {
     mavenLocal()
     maven { url "http://dl.bintray.com/kboom/scherule" }
-    maven { url "http://dl.bintray.com/cy6ergn0m/maven" }
-    jcenter()
     mavenCentral()
 }
 
-apply plugin: 'kotlin'
-apply plugin: 'application'
-apply plugin: 'com.bmuschko.docker-remote-api'
+apply plugin: 'com.scherule.project'
 apply plugin: 'org.junit.platform.gradle.plugin'
+apply from: "$projectDir/gradle/sourcesets.gradle"
+apply from: "$projectDir/gradle/boot.gradle"
+apply from: "$projectDir/gradle/container.gradle"
 
-version = '1.0-SNAPSHOT'
-sourceCompatibility = '1.8'
-mainClassName = 'com.scherule.calendaring.CalendaringApplication'
-jar.enabled = false
-ext {
-    fatJarName = 'scherule-calendaring-fat.jar'
-}
+scheruleProject {
 
-def vertxVersion = '3.4.2'
-def mainVerticleName = 'com.scherule.calendaring.CalendaringRootVerticle'
-def watchForChange = 'src/**/*'
-def doOnChange = './gradlew classes'
-
-configurations {
-    integrationCompile.extendsFrom testCompile
-    integrationRuntime.extendsFrom testRuntime
-}
-
-task annotationProcessing(type: JavaCompile, group: 'build') {
-    dependsOn tasks.getByPath('compileKotlin')
-    source = [sourceSets.main.java, sourceSets.main.kotlin]
-    classpath = configurations.compile + configurations.compileOnly + files(compileKotlin.destinationDir)
-    destinationDir = project.file('src/main/generated')
-    options.compilerArgs = [
-            "-proc:only",
-            "-processor", "io.vertx.codegen.CodeGenProcessor",
-            "-Acodegen.output=${project.projectDir}/src/main"
-    ]
-}
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = sourceCompatibility
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = sourceCompatibility
-    }
-}
-
-compileJava {
-    targetCompatibility = sourceCompatibility
-    sourceCompatibility = sourceCompatibility
-
-    dependsOn annotationProcessing
-}
-
-sourceSets {
-
-    main {
-        java {
-            srcDirs += 'src/main/generated'
-        }
-    }
-
-    integration {
-        java {
-            compileClasspath += main.output + test.output
-            runtimeClasspath += main.output + test.output
-            srcDir file('src/integration/java')
-        }
-        resources.srcDir file('src/integration/resources')
-    }
-
-    e2e {
-        java {
-            srcDir file('src/e2e/java')
-        }
-        resources.srcDir file('src/e2e/resources')
-    }
-
-}
-
-shadowJar {
-    archiveName = fatJarName
-    configurations = [project.configurations.compile]
-    manifest {
-        attributes 'Main-Class': mainClassName
-        attributes 'Main-Verticle': mainVerticleName
-    }
 }
 
 junitPlatform {
@@ -126,50 +46,6 @@ junitPlatform {
             include 'com.scherule.calendaring'
         }
     }
-}
-
-run {
-    args = [
-            "run", mainVerticleName,
-            "--redeploy=$watchForChange",
-            "--launcher-class=$mainClassName",
-            "--on-redeploy=$doOnChange",
-            "--java-opts", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005"
-    ]
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.0'
-}
-
-task buildMyAppImage(type: DockerBuildImage) {
-    inputDir = project.rootDir
-    tag = 'scherule-calendaring'
-    buildArgs = [
-            ARTIFACT_NAME: fatJarName,
-            MAIN_CLASS_NAME: mainClassName,
-            MAIN_VERTICLE_NAME: mainVerticleName
-    ]
-}
-
-task allocatePort() {
-    def s = new ServerSocket(0);
-    allocatePort.ext.port = s.getLocalPort()
-}
-
-task createMyAppContainer(type: DockerCreateContainer) {
-    dependsOn buildMyAppImage, allocatePort
-    targetImageId { buildMyAppImage.getImageId() }
-    portBindings = ["8080:${allocatePort.ext.port}"]
-}
-
-task startMyAppContainer(type: DockerStartContainer) {
-    dependsOn createMyAppContainer
-    targetContainerId { createMyAppContainer.getContainerId() }
-}
-
-task stopMyAppContainer(type: DockerStopContainer) {
-    targetContainerId { createMyAppContainer.getContainerId() }
 }
 
 task e2eTest(
@@ -195,31 +71,20 @@ check {
 }
 
 dependencies {
+
     compile "com.scherule:scherule-commons:1.1.6"
     compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.1.1'
-    compile "io.vertx:vertx-core:$vertxVersion"
-    compile "io.vertx:vertx-web:$vertxVersion"
-    compile "io.vertx:vertx-reactive-streams:$vertxVersion"
-    compile "io.vertx:vertx-service-discovery:$vertxVersion"
-    compile "io.vertx:vertx-hazelcast:$vertxVersion"
-    compile "io.vertx:vertx-config:$vertxVersion"
-    compile group: 'com.intapp', name: 'vertx-guice', version: '1.0'
-    compile 'com.google.guava:guava:23.0'
-    compile 'org.jetbrains.kotlinx:vertx3-lang-kotlin:0.0.+'
     compile group: 'com.rabbitmq', name: 'amqp-client', version: '4.1.1'
-    compile 'com.google.inject:guice:4.1.0'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.4'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.9'
     compile group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-joda', version: '2.8.9'
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.0'
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.9"
-    compile group: 'com.google.inject.extensions', name: 'guice-multibindings', version: '4.1.0'
     compile group: 'org.ektorp', name: 'org.ektorp', version: '1.4.4'
     compile group: 'joda-time', name: 'joda-time', version: '2.9.9'
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.7.4'
-    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.9.0'
-    compileOnly "io.vertx:vertx-codegen:$vertxVersion"
+
     testCompile 'info.cukes:cucumber-guice:1.2.5'
     testCompile 'info.cukes:cucumber-java:1.2.5'
     testCompile 'info.cukes:cucumber-junit:1.2.5'
@@ -229,11 +94,9 @@ dependencies {
     testRuntime 'org.junit.platform:junit-platform-launcher:1.0.0-M5'
     testRuntime 'org.junit.platform:junit-platform-runner:1.0.0-M5'
     testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.0-M5'
-    testCompile "io.vertx:vertx-unit:$vertxVersion"
 
     integrationCompile 'org.junit.platform:junit-platform-console:1.0.0-M5'
 
-    e2eCompile 'org.jetbrains.kotlinx:vertx3-lang-kotlin:0.0.+'
     e2eCompile 'com.google.inject:guice:4.1.0'
     e2eCompile 'com.google.inject.extensions:guice-multibindings:4.1.0'
     e2eCompile 'info.cukes:cucumber-guice:1.2.5'

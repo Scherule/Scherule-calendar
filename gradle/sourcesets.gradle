@@ -1,0 +1,29 @@
+apply plugin: 'kotlin'
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+configurations {
+    integrationCompile.extendsFrom testCompile
+    integrationRuntime.extendsFrom testRuntime
+}
+
+sourceSets {
+
+    integration {
+        java {
+            compileClasspath += main.output + test.output
+            runtimeClasspath += main.output + test.output
+            srcDir file('src/integration/java')
+        }
+        resources.srcDir file('src/integration/resources')
+    }
+
+    e2e {
+        java {
+            srcDir file('src/e2e/java')
+        }
+        resources.srcDir file('src/e2e/resources')
+    }
+
+}
