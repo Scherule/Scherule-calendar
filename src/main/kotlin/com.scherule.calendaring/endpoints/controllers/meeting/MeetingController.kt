@@ -1,7 +1,7 @@
-package com.scherule.calendaring.endpoints.controllers
+package com.scherule.calendaring.endpoints.controllers.meeting
 
-import com.scherule.calendaring.domain.Meeting
-import com.scherule.calendaring.domain.MeetingId
+import com.scherule.calendaring.domain.entities.Meeting
+import com.scherule.calendaring.domain.entities.MeetingId
 import com.scherule.calendaring.domain.services.MeetingService
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation

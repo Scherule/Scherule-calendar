@@ -1,4 +1,4 @@
-package com.scherule.calendaring.domain
+package com.scherule.calendaring.domain.entities
 
 data class MeetingKey(
         val owner: ParticipantId,

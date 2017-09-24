@@ -1,6 +1,6 @@
 package com.scherule.calendaring.serialization
 
-import com.scherule.calendaring.domain.SchedulingAlgorithm
+import com.scherule.calendaring.domain.entities.SchedulingAlgorithm
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -4,8 +4,8 @@ import com.scherule.calendaring.builders.MeetingBuilder
 import com.scherule.calendaring.builders.MeetingBuilder.Companion.aMeeting
 import com.scherule.calendaring.builders.ParticipantBuilder
 import com.scherule.calendaring.builders.ParticipantBuilder.Companion.aParticipant
-import com.scherule.calendaring.domain.Meeting
-import com.scherule.calendaring.domain.ParticipantId
+import com.scherule.calendaring.domain.entities.Meeting
+import com.scherule.calendaring.domain.entities.ParticipantId
 import com.scherule.calendaring.domain.services.MeetingService
 import com.scherule.scheduling.converters.IntervalConverter
 import cucumber.api.Transform

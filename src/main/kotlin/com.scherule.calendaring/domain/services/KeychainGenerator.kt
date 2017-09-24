@@ -1,8 +1,8 @@
 package com.scherule.calendaring.domain.services
 
-import com.scherule.calendaring.domain.Meeting
-import com.scherule.calendaring.domain.MeetingKey
-import com.scherule.calendaring.domain.MeetingKeychain
+import com.scherule.calendaring.domain.entities.Meeting
+import com.scherule.calendaring.domain.entities.MeetingKey
+import com.scherule.calendaring.domain.entities.MeetingKeychain
 import com.scherule.calendaring.domain.generateRandomHex
 import org.springframework.stereotype.Service
 

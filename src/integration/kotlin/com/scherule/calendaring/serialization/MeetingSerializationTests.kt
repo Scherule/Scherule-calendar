@@ -1,7 +1,7 @@
 package com.scherule.calendaring.serialization
 
 
-import com.scherule.calendaring.domain.*
+import com.scherule.calendaring.domain.entities.*
 import org.assertj.core.api.Assertions.assertThat
 import org.joda.time.Duration
 import org.joda.time.Interval
@@ -28,7 +28,7 @@ class MeetingSerializationTests {
     @Test
     fun canSerializeMeetingId() {
         assertThat(meetingIdTester.write(MeetingId.meetingId("123")))
-                .isEqualTo("{\"id\":\"123\"}")
+                .isEqualTo("""{"id":"123"}""")
     }
 
     @Test
@@ -37,7 +37,7 @@ class MeetingSerializationTests {
                 between = Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"),
                 minDuration = Duration.standardHours(5),
                 minParticipants = 3
-        ))).isEqualTo("{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3}")
+        ))).isEqualTo("""{"between":"1507040100000-1507046400000","minDuration":18000000,"minParticipants":3}""")
     }
 
     @Test
@@ -62,12 +62,12 @@ class MeetingSerializationTests {
                         )
                 ),
                 meetingState = MeetingState.CREATED
-        ))).isEqualTo("{\"id\":{\"id\":\"123\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"manager\":{\"id\":\"master\"},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}],\"keychain\":{\"managementKey\":{\"owner\":{\"id\":\"abc\"},\"hash\":\"\"},\"participationKeys\":{}},\"meetingState\":\"CREATED\"}")
+        ))).isEqualTo("""{"meetingId":{"id":"123"},"parameters":{"between":"1507040100000-1507046400000","minDuration":18000000,"minParticipants":3},"manager":{"id":"master"},"participants":[{"participantId":{"id":"321"},"name":"Greg","importance":100,"availability":[{"interval":"1507040100000-1507046400000","preference":1},{"interval":"1507108500000-1507158000000","preference":1}]}],"keychain":{"managementKey":{"owner":{"id":"abc"},"hash":""},"participationKeys":{}},"meetingState":"CREATED"}""")
     }
 
     @Test
     fun canDeserializeMeeting() {
-        assertThat(meetingTester.read("{\"id\":{\"id\":\"123\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"manager\":{\"id\":\"master\"},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}],\"keychain\":{\"managementKey\":{\"owner\":{\"id\":\"abc\"},\"hash\":\"\"},\"participationKeys\":{}},\"meetingState\":\"CREATED\"}"))
+        assertThat(meetingTester.parse("""{"meetingId":{"id":"123"},"parameters":{"between":"1507040100000-1507046400000","minDuration":18000000,"minParticipants":3},"manager":{"id":"master"},"participants":[{"participantId":{"id":"321"},"name":"Greg","importance":100,"availability":[{"interval":"1507040100000-1507046400000","preference":1},{"interval":"1507108500000-1507158000000","preference":1}]}],"keychain":{"managementKey":{"owner":{"id":"abc"},"hash":""},"participationKeys":{}},"meetingState":"CREATED"}"""))
                 .isEqualTo(Meeting(
                         meetingId = MeetingId.meetingId("123"),
                         parameters = MeetingParameters(

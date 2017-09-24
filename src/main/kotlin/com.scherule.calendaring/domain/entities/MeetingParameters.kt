@@ -1,4 +1,4 @@
-package com.scherule.calendaring.domain
+package com.scherule.calendaring.domain.entities
 
 import org.joda.time.Duration
 import org.joda.time.Interval

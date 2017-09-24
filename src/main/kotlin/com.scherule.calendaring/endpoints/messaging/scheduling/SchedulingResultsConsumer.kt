@@ -1,4 +1,4 @@
-package com.scherule.calendaring.endpoints.messaging
+package com.scherule.calendaring.endpoints.messaging.scheduling
 
 import com.scherule.calendaring.domain.repositories.MeetingRepository
 import org.slf4j.LoggerFactory

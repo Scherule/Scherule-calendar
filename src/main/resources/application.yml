@@ -20,3 +20,15 @@ spring:
       username: test
       password: test
       driver-class-name: org.postgresql.Driver
+
+app:
+  scheduling:
+    request:
+      destination:
+        name: scheduling
+    response:
+      destination:
+        name: scheduling-response
+
+
+

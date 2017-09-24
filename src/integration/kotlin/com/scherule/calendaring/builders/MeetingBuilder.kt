@@ -1,8 +1,12 @@
 package com.scherule.calendaring.builders
 
 import com.scherule.calendaring.domain.*
-import com.scherule.calendaring.domain.MeetingId.Companion.noMeetingId
-import com.scherule.calendaring.domain.ParticipantId.Companion.participantId
+import com.scherule.calendaring.domain.entities.Meeting
+import com.scherule.calendaring.domain.entities.MeetingId.Companion.noMeetingId
+import com.scherule.calendaring.domain.entities.MeetingParameters
+import com.scherule.calendaring.domain.entities.Participant
+import com.scherule.calendaring.domain.entities.ParticipantId
+import com.scherule.calendaring.domain.entities.ParticipantId.Companion.participantId
 import org.joda.time.Duration
 import org.joda.time.Interval
 

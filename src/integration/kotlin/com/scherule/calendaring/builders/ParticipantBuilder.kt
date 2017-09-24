@@ -1,8 +1,8 @@
 package com.scherule.calendaring.builders
 
-import com.scherule.calendaring.domain.Availability
-import com.scherule.calendaring.domain.Participant
-import com.scherule.calendaring.domain.ParticipantId
+import com.scherule.calendaring.domain.entities.Availability
+import com.scherule.calendaring.domain.entities.Participant
+import com.scherule.calendaring.domain.entities.ParticipantId
 import org.joda.time.Interval
 
 class ParticipantBuilder(

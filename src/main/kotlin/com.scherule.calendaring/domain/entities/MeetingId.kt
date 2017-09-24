@@ -1,5 +1,6 @@
-package com.scherule.calendaring.domain
+package com.scherule.calendaring.domain.entities
 
+import com.scherule.calendaring.domain.generateRandomHex
 import java.io.Serializable
 
 class MeetingId(

@@ -1,7 +1,7 @@
 package com.scherule.calendaring.serialization
 
+import com.scherule.calendaring.domain.entities.Availability
 import org.assertj.core.api.Assertions.assertThat
-import com.scherule.calendaring.domain.Availability
 import org.joda.time.Interval
 import org.junit.Test
 import org.junit.runner.RunWith

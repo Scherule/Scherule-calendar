@@ -1,7 +1,7 @@
 package com.scherule.calendaring.serialization
 
-import com.scherule.calendaring.domain.*
-import com.scherule.calendaring.endpoints.messaging.SchedulingJob
+import com.scherule.calendaring.domain.entities.*
+import com.scherule.calendaring.endpoints.messaging.scheduling.SchedulingJob
 import org.assertj.core.api.Assertions.assertThat
 import org.joda.time.Duration
 import org.joda.time.Interval
@@ -25,13 +25,13 @@ class SchedulingJobSerializationTests {
     @Test
     fun canSerializeSchedulingJobId() {
         assertThat(schedulingJobIdTester.write(SchedulingJobId.schedulingJobId("123")))
-                .isEqualTo("{\"id\":\"123\"}")
+                .isEqualTo("""{"id":"123"}""")
     }
 
     @Test
     fun canSerializeSchedulingJob() {
         assertThat(schedulingJobTester.write(SchedulingJob(
-                id = SchedulingJobId.schedulingJobId("933"),
+                schedulingJobId = SchedulingJobId.schedulingJobId("933"),
                 algorithm = SchedulingAlgorithm(
                         type = "intervalProjection"
                 ),
@@ -51,7 +51,7 @@ class SchedulingJobSerializationTests {
                         )
                 )
         ))
-        ).isEqualTo("{\"id\":{\"id\":\"933\"},\"algorithm\":{\"type\":\"intervalProjection\"},\"parameters\":{\"between\":\"1507040100000-1507046400000\",\"minDuration\":18000000,\"minParticipants\":3},\"participants\":[{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":1,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1}]}]}")
+        ).isEqualTo("""{"schedulingJobId":{"id":"933"},"algorithm":{"type":"intervalProjection"},"parameters":{"between":"1507040100000-1507046400000","minDuration":18000000,"minParticipants":3},"participants":[{"participantId":{"id":"321"},"name":"Greg","importance":1,"availability":[{"interval":"1507040100000-1507046400000","preference":1}]}]}""")
     }
 
 }

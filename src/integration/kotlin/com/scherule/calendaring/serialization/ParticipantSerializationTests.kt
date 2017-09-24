@@ -1,6 +1,8 @@
 package com.scherule.calendaring.serialization
 
-import com.scherule.calendaring.domain.*
+import com.scherule.calendaring.domain.entities.Availability
+import com.scherule.calendaring.domain.entities.Participant
+import com.scherule.calendaring.domain.entities.ParticipantId
 import org.assertj.core.api.Assertions.assertThat
 import org.joda.time.Interval
 import org.junit.Test
@@ -23,7 +25,7 @@ class ParticipantSerializationTests {
     @Test
     fun canSerializeParticipantId() {
         assertThat(participantIdTester.write(ParticipantId.participantId("123")))
-                .isEqualTo("{\"id\":\"123\"}")
+                .isEqualTo("""{"id":"123"}""")
     }
 
     @Test
@@ -36,7 +38,7 @@ class ParticipantSerializationTests {
                         Availability.availableIn(Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z")),
                         Availability.availableIn(Interval.parse("2017-10-04T09:15Z/2017-10-04T23:00Z"))
                 )
-        ))).isEqualTo("{\"id\":{\"id\":\"321\"},\"name\":\"Greg\",\"importance\":100,\"availability\":[{\"interval\":\"1507040100000-1507046400000\",\"preference\":1},{\"interval\":\"1507108500000-1507158000000\",\"preference\":1}]}")
+        ))).isEqualTo("""{"participantId":{"id":"321"},"name":"Greg","importance":100,"availability":[{"interval":"1507040100000-1507046400000","preference":1},{"interval":"1507108500000-1507158000000","preference":1}]}""")
     }
 
 }

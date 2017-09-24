@@ -1,6 +1,6 @@
-package com.scherule.calendaring.endpoints.messaging
+package com.scherule.calendaring.endpoints.messaging.scheduling
 
-import com.scherule.calendaring.domain.*
+import com.scherule.calendaring.domain.entities.*
 import org.joda.time.Duration
 import org.joda.time.Interval
 import org.slf4j.LoggerFactory
@@ -25,7 +25,7 @@ class SchedulingJobDispatcher
 
     fun dispatchJob() {
         jmsTemplate.convertAndSend(requestDestination, SchedulingJob(
-                id = SchedulingJobId.schedulingJobId("933"),
+                schedulingJobId = SchedulingJobId.schedulingJobId("933"),
                 algorithm = SchedulingAlgorithm(
                         type = "interval-projection"
                 ),

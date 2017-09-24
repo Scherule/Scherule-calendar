@@ -1,7 +1,7 @@
-package com.scherule.calendaring.domain
+package com.scherule.calendaring.domain.entities
 
-import com.scherule.calendaring.domain.MeetingId.Companion.noMeetingId
-import com.scherule.calendaring.domain.MeetingKeychain.Companion.EMPTY_KEYCHAIN
+import com.scherule.calendaring.domain.entities.MeetingId.Companion.noMeetingId
+import com.scherule.calendaring.domain.entities.MeetingKeychain.Companion.EMPTY_KEYCHAIN
 import com.scherule.calendaring.domain.services.KeychainGenerator
 import javax.persistence.*
 import javax.validation.constraints.NotNull
@@ -55,5 +55,21 @@ class Meeting(
                 MeetingState.CREATED
         )
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Meeting
+
+        if (meetingId != other.meetingId) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return meetingId.hashCode()
+    }
+
 
 }
