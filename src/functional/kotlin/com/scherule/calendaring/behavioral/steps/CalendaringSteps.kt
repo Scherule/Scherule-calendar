@@ -1,9 +1,9 @@
 package com.scherule.calendaring.behavioral.steps
 
-import com.scherule.calendaring.builders.MeetingBuilder
-import com.scherule.calendaring.builders.MeetingBuilder.Companion.aMeeting
-import com.scherule.calendaring.builders.ParticipantBuilder
-import com.scherule.calendaring.builders.ParticipantBuilder.Companion.aParticipant
+import calendaring.builders.MeetingBuilder
+import calendaring.builders.MeetingBuilder.Companion.aMeeting
+import calendaring.builders.ParticipantBuilder
+import calendaring.builders.ParticipantBuilder.Companion.aParticipant
 import com.scherule.calendaring.domain.entities.Meeting
 import com.scherule.calendaring.domain.entities.ParticipantId
 import com.scherule.calendaring.domain.services.MeetingService
@@ -89,8 +89,7 @@ internal class CalendaringSteps
     fun thenTheOrganizerReceivesUniqueMeetingManagementLinks(
             participantName: String
     ) {
-        assertThat(meeting!!.keychain.managementKey.owner)
-                .isEqualTo(ParticipantId(participantName))
+        assertThat(meeting!!.keychain.managementKey).isNotBlank()
     }
 
     @Then("participation key bound to participant '([^']*)' can be obtained for this meeting")

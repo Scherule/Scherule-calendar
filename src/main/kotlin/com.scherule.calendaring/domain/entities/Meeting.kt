@@ -11,7 +11,7 @@ import javax.validation.constraints.Size
 @Table(name = "MEETING")
 class Meeting(
 
-        @get:NotNull
+        @get:EmbeddedId
         val meetingId: MeetingId = noMeetingId,
 
         @get:Embedded
@@ -26,8 +26,7 @@ class Meeting(
         @get:Size(min = 2)
         val participants: Set<Participant>,
 
-        @get:OneToOne
-        @get:JoinColumn(name = "KEYCHAIN_ID")
+        @get:Embedded
         val keychain: MeetingKeychain = EMPTY_KEYCHAIN,
 
         @get:Column(name = "MEETING_STATE")

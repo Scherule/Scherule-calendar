@@ -1,9 +1,12 @@
 package com.scherule.calendaring.domain.entities
 
+import javax.persistence.Embeddable
+
+@Embeddable
 class ParticipantId(val id: String) {
 
     companion object {
-        fun participantId(id: String) : ParticipantId {
+        fun participantId(id: String): ParticipantId {
             return ParticipantId(id)
         }
     }

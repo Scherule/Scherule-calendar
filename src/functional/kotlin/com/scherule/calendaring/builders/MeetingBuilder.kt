@@ -1,6 +1,5 @@
 package com.scherule.calendaring.builders
 
-import com.scherule.calendaring.domain.*
 import com.scherule.calendaring.domain.entities.Meeting
 import com.scherule.calendaring.domain.entities.MeetingId.Companion.noMeetingId
 import com.scherule.calendaring.domain.entities.MeetingParameters

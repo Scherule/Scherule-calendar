@@ -11,7 +11,7 @@ import javax.validation.constraints.Size
 @Table(name = "PARTICIPANT")
 class Participant(
 
-        @get:NotNull
+        @get:EmbeddedId
         val participantId: ParticipantId,
 
         @get:Column(name = "NAME")

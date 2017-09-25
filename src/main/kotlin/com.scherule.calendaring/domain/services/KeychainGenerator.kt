@@ -11,7 +11,7 @@ class KeychainGenerator {
 
     fun generateFor(meeting: Meeting): MeetingKeychain {
         return MeetingKeychain(
-                managementKey = MeetingKey(meeting.manager, generateRandomHex(32)),
+                managementKey = generateRandomHex(32),
                 participationKeys = meeting.participants.map {
                     it.participantId to MeetingKey(it.participantId, generateRandomHex(32))
                 }.toMap()

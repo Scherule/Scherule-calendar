@@ -2,4 +2,4 @@
 !Dockerfile
 !entrypoint.sh
 !build/libs
-!version.info
+!version.json

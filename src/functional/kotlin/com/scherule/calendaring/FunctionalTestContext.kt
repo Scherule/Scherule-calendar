@@ -7,7 +7,7 @@ import javax.sql.DataSource
 
 
 @Configuration
-class IntegrationTestContext {
+class FunctionalTestContext {
 
     /**
      * Note that this makes sense only for simple usage of PostgreSQL database.

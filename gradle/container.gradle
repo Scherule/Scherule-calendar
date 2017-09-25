@@ -15,17 +15,17 @@ buildscript {
 
 }
 
-apply plugin: 'com.bmuschko.docker-remote-api'
+apply plugin: com.bmuschko.gradle.docker.DockerRemoteApiPlugin
+
+task allocatePort() {
+    def s = new ServerSocket(0);
+    allocatePort.ext.port = s.getLocalPort()
+}
 
 task buildMyAppImage(type: DockerBuildImage) {
     inputDir = project.rootDir
     tag = 'scherule-calendaring'
     buildArgs = [:]
-}
-
-task allocatePort() {
-    def s = new ServerSocket(0);
-    allocatePort.ext.port = s.getLocalPort()
 }
 
 task createMyAppContainer(type: DockerCreateContainer) {

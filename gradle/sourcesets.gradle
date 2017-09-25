@@ -1,31 +1,24 @@
 apply plugin: 'kotlin'
-apply plugin: "kotlin-allopen"
+apply plugin: "kotlin-spring"
+apply plugin: "kotlin-jpa"
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 configurations {
-    integrationCompile.extendsFrom testCompile
-    integrationRuntime.extendsFrom testRuntime
-}
-
-allOpen {
-    annotation "org.springframework.boot.autoconfigure.SpringBootApplication"
-    annotation "org.springframework.context.annotation.Configuration"
-    annotation "org.springframework.context.annotation.Service"
-    annotation "org.springframework.context.annotation.Repository"
-    annotation "org.springframework.context.annotation.Controller"
+    functionalCompile.extendsFrom testCompile
+    functionalRuntime.extendsFrom testRuntime
 }
 
 sourceSets {
 
-    integration {
+    functional {
         java {
             compileClasspath += main.output + test.output
             runtimeClasspath += main.output + test.output
-            srcDir file('src/integration/java')
+            srcDir file('src/functional/java')
         }
-        resources.srcDir file('src/integration/resources')
+        resources.srcDir file('src/functional/resources')
     }
 
     e2e {
@@ -40,4 +33,6 @@ sourceSets {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    e2eCompile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
 }
