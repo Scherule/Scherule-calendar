@@ -1,7 +1,9 @@
 package com.scherule.calendaring.domain.entities
 
+import org.hibernate.annotations.Columns
 import org.hibernate.annotations.GenericGenerator
-import org.threeten.extra.Interval
+import org.hibernate.annotations.Type
+import org.joda.time.Interval
 import javax.persistence.*
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
@@ -11,13 +13,20 @@ import javax.validation.constraints.NotNull
 @Table(name = "AVAILABILITY")
 class Availability(
 
+        @Type(type = "org.joda.time.contrib.hibernate.PersistentInterval")
+        @Columns(
+                columns = arrayOf(
+                        Column(name = "FROM"),
+                        Column(name = "TO")
+                )
+        )
         @NotNull
         val interval: Interval,
 
+        @Column(name = "PREFERENCE")
         @NotNull
         @Min(0)
         @Max(100)
-        @Column(name = "PREFERENCE")
         val preference: Int
 
 ) {
@@ -37,27 +46,8 @@ class Availability(
     private val id: String? = null
 
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other?.javaClass != javaClass) return false
-
-        other as Availability
-
-        if (interval != other.interval) return false
-        if (preference != other.preference) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = interval.hashCode()
-        result = 31 * result + preference
-        return result
-    }
-
     override fun toString(): String {
         return "Availability(interval=$interval, preference=$preference)"
     }
-
 
 }

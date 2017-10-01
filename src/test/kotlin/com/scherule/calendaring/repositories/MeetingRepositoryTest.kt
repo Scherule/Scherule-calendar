@@ -4,14 +4,13 @@ import com.scherule.calendaring.domain.entities.*
 import com.scherule.calendaring.domain.repositories.MeetingRepository
 import com.scherule.calendaring.fillToUUIDString
 import org.assertj.core.api.Assertions.assertThat
+import org.joda.time.Duration
+import org.joda.time.Interval
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
 import org.springframework.test.context.junit4.SpringRunner
-import org.threeten.extra.Interval
-import java.time.Duration
-import java.time.Period
 
 
 @RunWith(SpringRunner::class)
@@ -27,7 +26,7 @@ class MeetingRepositoryTest {
                 meetingId = MeetingId.meetingId(fillToUUIDString("123")),
                 parameters = MeetingParameters(
                         between = Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"),
-                        minDuration = Duration.ofHours(5),
+                        minDuration = Duration.standardDays(5),
                         minParticipants = 3
                 ),
                 organizer = Organizer(ParticipantId.participantId(fillToUUIDString("321"))),

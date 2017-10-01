@@ -1,7 +1,7 @@
 package com.scherule.calendaring.domain.entities
 
-import org.threeten.extra.Interval
-import java.time.Duration
+import org.joda.time.Duration
+import org.joda.time.Interval
 import javax.persistence.Access
 import javax.persistence.AccessType
 import javax.persistence.Column

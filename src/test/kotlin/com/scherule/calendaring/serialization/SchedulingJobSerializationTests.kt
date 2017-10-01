@@ -3,14 +3,14 @@ package com.scherule.calendaring.serialization
 import com.scherule.calendaring.domain.entities.*
 import com.scherule.calendaring.endpoints.messaging.scheduling.SchedulingJob
 import org.assertj.core.api.Assertions.assertThat
+import org.joda.time.Duration
+import org.joda.time.Interval
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.json.JsonTest
 import org.springframework.boot.test.json.JacksonTester
 import org.springframework.test.context.junit4.SpringRunner
-import org.threeten.extra.Interval
-import java.time.Duration
 
 @RunWith(SpringRunner::class)
 @JsonTest
@@ -37,7 +37,7 @@ class SchedulingJobSerializationTests {
                 ),
                 parameters = MeetingParameters(
                         between = Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"),
-                        minDuration = Duration.ofHours(5),
+                        minDuration = Duration.standardDays(5),
                         minParticipants = 3
                 ),
                 participants = setOf(
