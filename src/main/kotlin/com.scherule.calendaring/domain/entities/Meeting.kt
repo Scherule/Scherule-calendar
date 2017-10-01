@@ -15,15 +15,14 @@ class Meeting(
         val meetingId: MeetingId = noMeetingId,
 
         @Embedded
-        @NotNull
         val parameters: MeetingParameters,
 
-        @Column(updatable = false, insertable = false)
         @NotNull
-        @JoinColumn(name = "ORGANIZER_ID")
+        @OneToOne(cascade = arrayOf(CascadeType.ALL))
+        @JoinColumn(name = "ORGANIZER_ID", nullable = false, insertable = false, updatable = false)
         val organizer: Organizer,
 
-        @OneToMany(mappedBy = "participantId")
+        @OneToMany(mappedBy = "participantId", cascade = arrayOf(CascadeType.ALL))
         @Size(min = 2)
         val participants: Set<Participant>,
 

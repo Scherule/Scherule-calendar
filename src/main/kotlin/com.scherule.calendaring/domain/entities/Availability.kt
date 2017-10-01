@@ -1,20 +1,25 @@
 package com.scherule.calendaring.domain.entities
 
-import org.joda.time.Interval
+import org.hibernate.annotations.GenericGenerator
+import org.threeten.extra.Interval
 import javax.persistence.*
 import javax.validation.constraints.Max
 import javax.validation.constraints.Min
 import javax.validation.constraints.NotNull
 
 @Entity
-@Table(name = "AVAILABILITIES")
+@Table(name = "AVAILABILITY")
 class Availability(
-        @get:NotNull
+
+        @NotNull
         val interval: Interval,
-        @get:NotNull
-        @get:Min(0)
-        @get:Max(100)
+
+        @NotNull
+        @Min(0)
+        @Max(100)
+        @Column(name = "PREFERENCE")
         val preference: Int
+
 ) {
 
     companion object {
@@ -26,10 +31,10 @@ class Availability(
     }
 
     @Id
-    @Column(name = "ID")
-    @SequenceGenerator(name = "availability_seq", sequenceName = "availability_seq", allocationSize = 1, initialValue = 1000)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "availability_seq")
-    val id: Long? = null
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    @Column(name = "uuid", unique = true)
+    private val id: String? = null
 
 
     override fun equals(other: Any?): Boolean {

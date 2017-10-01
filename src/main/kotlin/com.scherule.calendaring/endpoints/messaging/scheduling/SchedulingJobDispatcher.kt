@@ -1,11 +1,11 @@
 package com.scherule.calendaring.endpoints.messaging.scheduling
 
 import com.scherule.calendaring.domain.entities.*
-import org.joda.time.Duration
-import org.joda.time.Interval
 import org.slf4j.LoggerFactory
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.stereotype.Component
+import org.threeten.extra.Interval
+import java.time.Duration
 import javax.inject.Inject
 import javax.inject.Named
 import javax.jms.Destination
@@ -31,7 +31,7 @@ class SchedulingJobDispatcher
                 ),
                 parameters = MeetingParameters(
                         between = Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"),
-                        minDuration = Duration.standardHours(5),
+                        minDuration = Duration.ofHours(5),
                         minParticipants = 3
                 ),
                 participants = setOf(

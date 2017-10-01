@@ -1,17 +1,24 @@
 package com.scherule.calendaring.domain.entities
 
-import org.joda.time.Duration
-import org.joda.time.Interval
+import org.threeten.extra.Interval
+import java.time.Duration
 import javax.persistence.Access
 import javax.persistence.AccessType
+import javax.persistence.Column
 import javax.persistence.Embeddable
 
 @Embeddable
 @Access(AccessType.FIELD)
 class MeetingParameters(
+
         val between: Interval,
+
+        @Column(name = "MIN_DURATION")
         val minDuration: Duration,
+
+        @Column(name = "MIN_PARTICIPANTS")
         val minParticipants: Int
+
 ) {
 
     override fun equals(other: Any?): Boolean {

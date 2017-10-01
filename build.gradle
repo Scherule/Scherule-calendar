@@ -100,17 +100,17 @@ dependencies {
     // mapping
     compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jackson_version"
     compile "com.fasterxml.jackson.core:jackson-databind:$jackson_version"
-    compile "com.fasterxml.jackson.datatype:jackson-datatype-joda:$jackson_version"
     compile "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:$jackson_version"
     compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
 
-    // time
-    compile "joda-time:joda-time:2.9.9"
+    // jdk enhancements
+    compile "org.threeten:threeten-extra:1.2"
 
     // database
     compile "org.hibernate:hibernate-validator:$hibernate_version"
     compile "org.hibernate:hibernate-validator-annotation-processor:$hibernate_version"
     compile 'org.postgresql:postgresql:9.4-1206-jdbc42'
+    compile "org.jadira.usertype:usertype.core:5.0.0.GA"
 
     // queues
     compile "org.apache.activemq:activemq-broker:5.15.0"
@@ -126,7 +126,6 @@ dependencies {
 
     // assertions
     testCompile 'org.assertj:assertj-core:3.8.0'
-    testCompile 'org.assertj:assertj-joda-time:2.0.0'
 
     // platform
     testCompile "junit:junit:4.12"
@@ -160,7 +159,6 @@ dependencies {
 
     // assertions
     e2eCompile "org.assertj:assertj-core:$assertj_version"
-    e2eCompile 'org.assertj:assertj-joda-time:2.0.0'
 
     // guice
     e2eCompile "com.google.inject:guice:$guice_version"
