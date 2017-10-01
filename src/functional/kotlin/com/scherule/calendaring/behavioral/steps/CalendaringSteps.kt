@@ -1,12 +1,14 @@
 package com.scherule.calendaring.behavioral.steps
 
-import calendaring.builders.MeetingBuilder
-import calendaring.builders.MeetingBuilder.Companion.aMeeting
-import calendaring.builders.ParticipantBuilder
-import calendaring.builders.ParticipantBuilder.Companion.aParticipant
+import com.scherule.calendaring.AbstractFunctionalTest
+import com.scherule.calendaring.builders.MeetingBuilder
+import com.scherule.calendaring.builders.MeetingBuilder.Companion.aMeeting
+import com.scherule.calendaring.builders.ParticipantBuilder
 import com.scherule.calendaring.domain.entities.Meeting
+import com.scherule.calendaring.domain.entities.Organizer
 import com.scherule.calendaring.domain.entities.ParticipantId
 import com.scherule.calendaring.domain.services.MeetingService
+import com.scherule.calendaring.fillToUUIDString
 import com.scherule.scheduling.converters.IntervalConverter
 import cucumber.api.Transform
 import cucumber.api.java.en.Given
@@ -21,7 +23,7 @@ import java.util.*
 internal class CalendaringSteps
 @Autowired constructor(
         private val meetingService: MeetingService
-) {
+) : AbstractFunctionalTest() {
 
     var meetingBuilder: MeetingBuilder = aMeeting()
 
@@ -33,7 +35,7 @@ internal class CalendaringSteps
     fun givenThereIsUserWhoWantsToScheduleMeeting(
             participantName: String
     ) {
-        meetingBuilder = aMeeting().withManager(ParticipantId.participantId(participantName))
+        meetingBuilder = aMeeting().withManager(Organizer(ParticipantId.participantId(participantName)))
     }
 
     @Given("this meeting has to happen in period '(.*)'")
@@ -57,7 +59,7 @@ internal class CalendaringSteps
     ) {
         participantBuilderMap.put(
                 participantName,
-                aParticipant(participantName)
+                ParticipantBuilder.aParticipant(participantName)
                         .withImportance(importance)
         )
     }
@@ -96,7 +98,9 @@ internal class CalendaringSteps
     fun thenParticipantReceivesInvitationLinkForThatMeeting(
             participantName: String
     ) {
-        assertThat(meeting!!.keychain.participationKeys).containsKey(ParticipantId(participantName))
+        assertThat(meeting!!.keychain.participationKeys).containsKey(
+                ParticipantId.participantId(fillToUUIDString(participantName))
+        )
     }
 
 }

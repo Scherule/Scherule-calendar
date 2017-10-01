@@ -1,11 +1,9 @@
 package com.scherule.calendaring.builders
 
-import com.scherule.calendaring.domain.entities.Meeting
+import com.scherule.calendaring.domain.entities.*
 import com.scherule.calendaring.domain.entities.MeetingId.Companion.noMeetingId
-import com.scherule.calendaring.domain.entities.MeetingParameters
-import com.scherule.calendaring.domain.entities.Participant
-import com.scherule.calendaring.domain.entities.ParticipantId
 import com.scherule.calendaring.domain.entities.ParticipantId.Companion.participantId
+import com.scherule.calendaring.fillToUUIDString
 import org.joda.time.Duration
 import org.joda.time.Interval
 
@@ -16,7 +14,7 @@ class MeetingBuilder {
     private var minParticipants = 1
     private var minDuration = Duration.standardHours(5)
     private var participants: MutableSet<Participant> = mutableSetOf()
-    private var manager = participantId("manager")
+    private var organizer = Organizer(participantId(fillToUUIDString("organizer")))
 
     companion object {
         fun aMeeting() = MeetingBuilder()
@@ -34,8 +32,8 @@ class MeetingBuilder {
         this.participants.addAll(participants)
     }
 
-    fun withManager(participantId: ParticipantId) = apply {
-        this.manager = participantId;
+    fun withManager(organizer: Organizer) = apply {
+        this.organizer = organizer
     }
 
     fun build(): Meeting = Meeting(
@@ -45,7 +43,7 @@ class MeetingBuilder {
                     minDuration,
                     minParticipants
             ),
-            manager = manager,
+            organizer = organizer,
             participants = participants
     )
 

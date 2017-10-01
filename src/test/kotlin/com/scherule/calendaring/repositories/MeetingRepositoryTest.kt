@@ -42,7 +42,7 @@ class MeetingRepositoryTest {
                         )
                 ),
                 meetingState = MeetingState.CREATED
-        )).meetingId.id).isNotNull()
+        ))).isNotNull()
     }
 
 }

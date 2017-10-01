@@ -11,6 +11,6 @@ import org.springframework.test.context.junit4.SpringRunner
 @Category(FunctionalTest::class)
 @ContextConfiguration(classes = arrayOf(FunctionalTestContext::class))
 @SpringBootTest(classes = arrayOf(CalendaringApplication::class),
-        webEnvironment = SpringBootTest.WebEnvironment.NONE)
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = arrayOf("classpath:application-test.yml"))
 class AbstractFunctionalTest
