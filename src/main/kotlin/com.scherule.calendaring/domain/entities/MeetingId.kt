@@ -1,22 +1,29 @@
 package com.scherule.calendaring.domain.entities
 
-import com.scherule.calendaring.domain.generateRandomHex
+import com.scherule.calendaring.domain.ZERO_UUID
 import java.io.Serializable
+import java.util.*
+import javax.persistence.Column
+import javax.persistence.Embeddable
 
+@Embeddable
 class MeetingId(
-        val id: String
+
+        @Column(name = "meeting_id", nullable = false, updatable = false)
+        val id: UUID
+
 ) : Serializable {
 
     companion object {
 
-        val noMeetingId = MeetingId("")
+        val noMeetingId = MeetingId(ZERO_UUID)
 
         fun meetingId(id: String): MeetingId {
-            return MeetingId(id)
+            return MeetingId(UUID.fromString(id))
         }
 
         fun newMeetingId(): MeetingId {
-            return meetingId(generateRandomHex(32))
+            return meetingId(UUID.randomUUID().toString())
         }
 
     }

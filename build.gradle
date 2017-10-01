@@ -152,8 +152,8 @@ dependencies {
      */
 
     // platform
-    e2eCompile "org.junit.jupiter:junit-jupiter-api:$junit_vintage_version"
-    e2eRuntime "org.junit.jupiter:junit-jupiter-engine:$junit_vintage_version"
+    e2eCompile "org.junit.jupiter:junit-jupiter-api:$junit_jupiter_version"
+    e2eRuntime "org.junit.jupiter:junit-jupiter-engine:$junit_jupiter_version"
     e2eRuntime "org.junit.platform:junit-platform-launcher:$junit_platform_version"
     e2eRuntime "org.junit.platform:junit-platform-runner:$junit_platform_version"
     e2eRuntime "org.junit.platform:junit-platform-console:$junit_platform_version"

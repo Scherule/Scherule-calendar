@@ -2,9 +2,12 @@ package com.scherule.calendaring.domain.entities
 
 import org.joda.time.Duration
 import org.joda.time.Interval
+import javax.persistence.Access
+import javax.persistence.AccessType
 import javax.persistence.Embeddable
 
 @Embeddable
+@Access(AccessType.FIELD)
 class MeetingParameters(
         val between: Interval,
         val minDuration: Duration,

@@ -2,6 +2,7 @@ package com.scherule.calendaring.repositories
 
 import com.scherule.calendaring.domain.entities.*
 import com.scherule.calendaring.domain.repositories.MeetingRepository
+import com.scherule.calendaring.fillToUUIDString
 import org.joda.time.Duration
 import org.joda.time.Interval
 import org.junit.Test
@@ -22,16 +23,16 @@ class MeetingRepositoryTest {
     @Test
     fun canSaveMeeting() {
         assertThat(repository.save(Meeting(
-                meetingId = MeetingId.meetingId("123"),
+                meetingId = MeetingId.meetingId(fillToUUIDString("123")),
                 parameters = MeetingParameters(
                         between = Interval.parse("2017-10-03T14:15Z/2017-10-03T16:00Z"),
                         minDuration = Duration.standardHours(5),
                         minParticipants = 3
                 ),
-                manager = ParticipantId.participantId("master"),
+                organizer = Organizer(ParticipantId.participantId(fillToUUIDString("321"))),
                 participants = setOf(
                         Participant(
-                                participantId = ParticipantId.participantId("321"),
+                                participantId = ParticipantId.participantId(fillToUUIDString("321")),
                                 name = "Greg",
                                 importance = 100,
                                 availability = setOf(
@@ -41,7 +42,7 @@ class MeetingRepositoryTest {
                         )
                 ),
                 meetingState = MeetingState.CREATED
-        )).id).isNotNull()
+        )).meetingId.id).isNotNull()
     }
 
 }

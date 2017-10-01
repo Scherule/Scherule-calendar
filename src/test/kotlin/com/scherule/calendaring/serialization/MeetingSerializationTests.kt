@@ -49,7 +49,7 @@ class MeetingSerializationTests {
                         minDuration = Duration.standardHours(5),
                         minParticipants = 3
                 ),
-                manager = ParticipantId.participantId("master"),
+                organizer = Organizer(ParticipantId.participantId("321")),
                 participants = setOf(
                         Participant(
                                 participantId = ParticipantId.participantId("321"),
@@ -75,7 +75,7 @@ class MeetingSerializationTests {
                                 minDuration = Duration.standardHours(5),
                                 minParticipants = 3
                         ),
-                        manager = ParticipantId.participantId("master"),
+                        organizer = Organizer(ParticipantId.participantId("321")),
                         participants = setOf(
                                 Participant(
                                         participantId = ParticipantId.participantId("321"),

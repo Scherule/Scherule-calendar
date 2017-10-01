@@ -11,36 +11,30 @@ import javax.validation.constraints.Size
 @Table(name = "MEETING")
 class Meeting(
 
-        @get:EmbeddedId
+        @EmbeddedId
         val meetingId: MeetingId = noMeetingId,
 
-        @get:Embedded
-        @get:NotNull
+        @Embedded
+        @NotNull
         val parameters: MeetingParameters,
 
-        @get:Column(updatable = false, insertable = false)
-        @get:NotNull
-        val manager: ParticipantId,
+        @Column(updatable = false, insertable = false)
+        @NotNull
+        @JoinColumn(name = "ORGANIZER_ID")
+        val organizer: Organizer,
 
-        @get:OneToMany(mappedBy = "id")
-        @get:Size(min = 2)
+        @OneToMany(mappedBy = "participantId")
+        @Size(min = 2)
         val participants: Set<Participant>,
 
-        @get:Embedded
+        @Embedded
         val keychain: MeetingKeychain = EMPTY_KEYCHAIN,
 
-        @get:Column(name = "MEETING_STATE")
-        @get:Enumerated(EnumType.STRING)
+        @Column(name = "MEETING_STATE")
+        @Enumerated(EnumType.STRING)
         val meetingState: MeetingState = MeetingState.INITIAL
 
 ) {
-
-    @Id
-    @Column(name = "ID")
-    @SequenceGenerator(name = "meeting_seq", sequenceName = "meeting_seq", allocationSize = 1, initialValue = 1000)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "meeting_seq")
-    val id: Long? = null
-
 
     fun generateKeys(
             keychainGenerator: KeychainGenerator
@@ -48,7 +42,7 @@ class Meeting(
         return Meeting(
                 noMeetingId,
                 parameters,
-                manager,
+                organizer,
                 participants,
                 keychainGenerator.generateFor(this),
                 MeetingState.CREATED

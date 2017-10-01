@@ -3,16 +3,16 @@ package com.scherule.calendaring.domain.entities
 import javax.persistence.*
 
 @Embeddable
+@Access(AccessType.FIELD)
 class MeetingKeychain(
-        val managementKey: String,
+        var managementKey: String = "",
 
-        @get:OneToMany(cascade = arrayOf(CascadeType.ALL))
-        @get:MapKey(name = "id")
-        val participationKeys: Map<ParticipantId, MeetingKey>
+        @OneToMany(cascade = arrayOf(CascadeType.ALL))
+        val participationKeys: Map<ParticipantId, MeetingKey> = emptyMap()
 ) {
 
     companion object {
-        val EMPTY_KEYCHAIN = MeetingKeychain("", emptyMap())
+        val EMPTY_KEYCHAIN = MeetingKeychain()
     }
 
 }
