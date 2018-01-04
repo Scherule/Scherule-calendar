@@ -20,20 +20,17 @@ import javax.jms.Destination
 @EnableJms
 class messaging {
 
-    @Bean
-    @Qualifier("scheduling.request.destination")
+    @Bean("scheduling.request.destination")
     fun schedulingRequestDestination(
             @Value("app.scheduling.request.destination.name") requestDestination: String
     ) = ActiveMQQueue(requestDestination)
 
-    @Bean
-    @Qualifier("scheduling.response.destination")
+    @Bean("scheduling.response.destination")
     fun schedulingResponseDestination(
             @Value("app.scheduling.response.destination.name") responseDestination: String
     ) = ActiveMQQueue(responseDestination)
 
-    @Bean
-    @Qualifier("scheduling.response.adapter")
+    @Bean("scheduling.response.adapter")
     fun schedulingResponseMessageListenerAdapter(
             consumer: SchedulingResultsConsumer
     ) = MessageListenerAdapter(consumer).apply {

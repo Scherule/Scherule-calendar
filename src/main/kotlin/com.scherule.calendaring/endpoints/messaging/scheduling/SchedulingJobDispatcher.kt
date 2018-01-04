@@ -11,7 +11,6 @@ import javax.inject.Inject
 import javax.inject.Named
 import javax.jms.Destination
 
-
 @Component
 class SchedulingJobDispatcher
 @Inject constructor(

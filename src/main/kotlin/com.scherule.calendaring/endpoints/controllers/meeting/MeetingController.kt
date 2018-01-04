@@ -12,7 +12,7 @@ import javax.ws.rs.PathParam
 
 @Api(value = "meeting", description = "Meeting operations", tags = arrayOf("meeting"))
 @RestController
-@RequestMapping("/account")
+@RequestMapping("/meetings")
 class MeetingController
 @Autowired constructor(
         private val meetingService: MeetingService
@@ -24,7 +24,7 @@ class MeetingController
     fun getMeeting(@PathParam("id") id: String) = meetingService.getMeeting(MeetingId.meetingId(id))
 
     @ApiOperation(value = "Create meeting", response = Meeting::class)
-    @RequestMapping(method = arrayOf(RequestMethod.GET))
+    @RequestMapping(method = arrayOf(RequestMethod.POST))
     @ResponseStatus(HttpStatus.CREATED)
     fun postMeeting(@RequestBody meeting: Meeting) = meetingService.createMeeting(meeting)
 

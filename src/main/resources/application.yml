@@ -5,9 +5,15 @@ logging:
   path: ./logs
 
 eureka:
+  instance:
+    prefer-ip-address: true
+    ip-address: ${HOST:localhost}
+    non-secure-port: ${server.port}
+    leaseRenewalIntervalInSeconds: 10
+    leaseExpirationDurationInSeconds: 20
   client:
     serviceUrl:
-      defaultZone: http://localhost:5000/eureka/
+      defaultZone: ${EUREKA_URL:http://localhost:9990/eureka/}
 
 spring:
   jpa:
@@ -16,7 +22,7 @@ spring:
     hibernate:
       ddl-auto: create-drop
   datasource:
-      url: jdbc:postgresql://0.0.0.0:5432/test
+      url: jdbc:postgresql://0.0.0.0:5432/calendar
       username: test
       password: test
       driver-class-name: org.postgresql.Driver
